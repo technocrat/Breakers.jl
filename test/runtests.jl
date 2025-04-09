@@ -1,47 +1,20 @@
-using Jenks
+#!/usr/bin/env julia
+# SPDX-License-Identifier: MIT
+
 using Test
+using Breakers
+using CSV
 
-@testset "RandnLin" begin
-    data = randn(10_000)
-    n = 10
-    JR = JenksClassification(n,data,feedback=false)
-    @test minimum(data) < JR.centres[1]
-    @test maximum(data) > JR.centres[end]
-    @test minimum(data) == JR.bounds[1]
-    @test maximum(data) == JR.bounds[end]
-    @test JR.breaks[1] == 1
-    @test JR.breaks[end] == length(data)+1
-    @test JR.ARE > 0.0
-    @test JR.GVF >= 0.0 && JR.GVF <= 1.0
-    @test sum(JR.n_in_class) == length(data)
-end
-
-@testset "RandnSq" begin
-    data = randn(10_000)
-    n = 10
-    JR = JenksClassification(n,data,errornorm=2,feedback=false)
-    @test minimum(data) < JR.centres[1]
-    @test maximum(data) > JR.centres[end]
-    @test minimum(data) == JR.bounds[1]
-    @test maximum(data) == JR.bounds[end]
-    @test JR.breaks[1] == 1
-    @test JR.breaks[end] == length(data)+1
-    @test JR.ARE > 0.0
-    @test JR.GVF >= 0.0 && JR.GVF <= 1.0
-    @test sum(JR.n_in_class) == length(data)
-end
-
-@testset "RandnSq" begin
-    data = randn(10_000)
-    n = 10
-    JR = JenksClassification(n,data,errornorm=1,feedback=false,inimode="rand")
-    @test minimum(data) < JR.centres[1]
-    @test maximum(data) > JR.centres[end]
-    @test minimum(data) == JR.bounds[1]
-    @test maximum(data) == JR.bounds[end]
-    @test JR.breaks[1] == 1
-    @test JR.breaks[end] == length(data)+1
-    @test JR.ARE > 0.0
-    @test JR.GVF >= 0.0 && JR.GVF <= 1.0
-    @test sum(JR.n_in_class) == length(data)
+@testset "Breakers.jl" begin
+    @testset "get_bins" begin
+        include("test_get_bins.jl")
+    end
+    
+    @testset "SubArrays" begin
+        include("test_subarrays.jl")
+    end
+    
+    @testset "R ClassInt Comparison" begin
+        include("compare_to_classInt_R.jl")
+    end
 end
