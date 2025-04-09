@@ -24,6 +24,6 @@ makedocs(
 # Deploy documentation
 deploydocs(
     repo = "github.com/technocrat/Breakers.jl.git",
-    devbranch = "master",
+    devbranch = "main",
     push_preview = true,
 ) 
