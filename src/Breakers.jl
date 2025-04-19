@@ -1,3 +1,4 @@
+__precompile__(true) 
 module Breakers
 
 # SPDX-License-Identifier: MIT
