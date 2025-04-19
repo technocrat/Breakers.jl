@@ -46,4 +46,3 @@ function get_bins(x::SubArray{T, 1}, n::Int=7) where T<:Union{Real, Missing}
     return get_bins(collect(x), n)
 end
 
-"""
