@@ -14,6 +14,7 @@ A tuple containing:
 - `iwork`: Matrix of optimal splitting points
 """
 function fisher_clustering(x::Vector{<:Real}, k::Integer)
+    s = sort(x)
     m = length(x)
     
     # Initialize work matrices

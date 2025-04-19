@@ -17,6 +17,19 @@ fisher_bins = bins["fisher"]
 
 Fisher-Jenks is particularly useful for data that forms natural clusters. It tries to find "gaps" in the data distribution and place break points optimally to minimize in-class variance.
 
+### Threaded Fisher-Jenks Implementation
+
+For large datasets, a multi-threaded implementation of the Fisher-Jenks algorithm is also available. This can provide significant performance improvements on multi-core systems.
+
+```julia
+using Threads  # Make sure threading is enabled
+
+# Get threaded Fisher breaks - same interface as the standard version
+fisher_breaks = Breakers.fisher_breaks_threaded(data, 5)
+```
+
+The threaded implementation produces identical results to the standard version but can be significantly faster for large datasets when multiple CPU cores are available. To check how many threads Julia is using, run `Threads.nthreads()`.
+
 ## K-means Clustering
 
 K-means clustering divides the data into k groups where each observation belongs to the cluster with the nearest mean. This method works well for data that forms natural clusters.

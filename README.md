@@ -39,6 +39,44 @@ bin_indices = get_bin_indices(data, breaks)
 cut_result = cut_data(data, 4, method=:equal)
 ```
 
+## Benchmarking
+
+Breakers.jl includes benchmarking tools to compare its performance with R's ClassInt package.
+
+### Requirements
+
+- Julia 1.11 or higher
+- R with the ClassInt package installed
+- RCall.jl and BenchmarkTools.jl packages
+
+### Running Benchmarks
+
+```bash
+# Install the required packages if not already installed
+julia -e 'using Pkg; Pkg.add(["BenchmarkTools", "RCall"])'
+
+# Run the benchmarks
+julia benchmark.jl
+```
+
+You can customize the benchmark parameters:
+
+```bash
+# Run with specific dataset sizes
+julia benchmark.jl --sizes=10000,50000,100000
+
+# Run specific methods only
+julia benchmark.jl --methods=fisher,kmeans
+
+# Run with specific data distributions
+julia benchmark.jl --distributions=normal,skewed
+
+# Run with a different number of bins
+julia benchmark.jl --bins=5
+```
+
+Results are saved in the `benchmarks` directory as CSV files.
+
 ## License
 
 MIT License

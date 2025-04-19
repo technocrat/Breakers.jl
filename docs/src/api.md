@@ -14,6 +14,7 @@ cut_data
 
 ```@docs
 fisher_breaks
+fisher_breaks_threaded
 fisher_clustering
 kmeans_breaks
 quantile_breaks

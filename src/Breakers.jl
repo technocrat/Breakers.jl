@@ -16,8 +16,8 @@ include("fixed_breaks.jl")
 include("kmeans_breaks.jl")
 include("fisher_clustering.jl")
 include("fisher_breaks.jl")
+include("fisher_breaks_threaded.jl")
 include("quantile_breaks.jl")
-include("get_breaks_raw.jl")  # Include our new implementation
 
 """
     get_bins(x::Vector{T}, n::Int=7) where T<:Union{Real, Missing} -> Dict{String, Vector{String}}
@@ -186,7 +186,8 @@ end
 # Include get_breaks.jl after get_bins is defined
 include("get_breaks.jl")  # Include backward compatibility wrapper
 
-export get_breaks, get_breaks_raw, cut_data, equal_breaks, fixed_breaks, 
-       kmeans_breaks, fisher_clustering, fisher_breaks, quantile_breaks, get_bins, get_bin_indices
+export get_breaks, cut_data, equal_breaks, fixed_breaks, 
+       kmeans_breaks, fisher_clustering, fisher_breaks, 
+       quantile_breaks, get_bins, get_bin_indices
 
-end # module 
+    end # module Breakers
