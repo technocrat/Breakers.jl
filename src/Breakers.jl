@@ -10,13 +10,13 @@ using Clustering
 using StatsBase
 using Statistics
 
+include("get_bins.jl")
 include("cut_data.jl")
 include("equal_breaks.jl")
 include("fixed_breaks.jl")
 include("kmeans_breaks.jl")
 include("fisher_clustering.jl")
 include("fisher_breaks.jl")
-include("fisher_breaks_threaded.jl")
 include("quantile_breaks.jl")
 
 """
