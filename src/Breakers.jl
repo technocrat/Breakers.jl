@@ -142,6 +142,7 @@ include("get_breaks.jl")  # Include backward compatibility wrapper
 
 export get_breaks, cut_data, equal_breaks, fixed_breaks, 
        kmeans_breaks, fisher_clustering, fisher_breaks, 
-       quantile_breaks, get_bins, get_bin_indices
+       quantile_breaks, get_bins, get_bin_indices,
+       get_breaks_raw
 
 end # module Breakers
