@@ -22,7 +22,7 @@ else
 end
 
 # Check required packages
-required_pkgs = ["Breakers", "BenchmarkTools", "RCall", "CSV", "DataFrames", "Statistics", "Random", "Printf"]
+required_pkgs = ["Breakers", "BenchmarkTools", "CSV", "DataFrames", "Statistics", "Random", "Printf"]
 for pkg in required_pkgs
     if !haskey(Pkg.project().dependencies, pkg)
         @info "Installing required package: $pkg"
