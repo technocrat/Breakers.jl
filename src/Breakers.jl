@@ -19,6 +19,7 @@ include("kmeans_breaks.jl")
 include("fisher_clustering.jl")
 include("fisher_breaks.jl")
 include("quantile_breaks.jl")
+include("get_breaks_raw.jl")    
 
 """
     get_bin_indices(x::Vector{T}, n::Int=7) where T<:Union{Real, Missing} -> Dict{String, Vector{Int}}
