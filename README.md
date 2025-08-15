@@ -18,7 +18,7 @@ Breakers.jl provides methods to divide a vector into intervals, similar to R's c
 
 ```julia
 using Pkg
-Pkg.add("https://github.com/technocrat/Breakers.jl")
+Pkg.add(url = "https://github.com/technocrat/Breakers.jl")
 ```
 
 ## Usage
