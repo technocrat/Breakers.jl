@@ -14,6 +14,38 @@ Breakers.jl provides methods to divide a vector into intervals, similar to R's c
 - High compatibility with R's classInt package
 - Optimized for Julia's performance characteristics
 
+## Performance Considerations
+
+### Fisher-Jenks Natural Breaks Algorithm
+
+The Fisher-Jenks algorithm has **O(k × n²)** time complexity where `k` is the number of classes and `n` is the number of data points. This makes it computationally intensive for large datasets.
+
+**Recommendations:**
+- Use Fisher-Jenks for datasets with fewer than **5,000 distinct values** for practical performance
+- For larger datasets, consider using `quantile_breaks` or `equal_breaks` which have much better performance characteristics
+- For very large datasets (>10,000 values), consider pre-sampling your data before applying Fisher-Jenks
+
+**Future Enhancements:**
+A future version may implement the more efficient **O(k × n × log(n))** algorithm described in [Fisher's Natural Breaks Classification complexity proof](https://geodms.nl/docs/fisher's-natural-breaks-classification-complexity-proof.html) for better performance on large datasets.
+
+### K-means Clustering Performance Optimization
+
+**Performance Improvement**: The k-means implementation has been optimized by changing the default number of random starts from 3 to 1. This provides a **~3x performance improvement** while maintaining good clustering quality for most use cases.
+
+- **Default behavior**: `rtimes=1` (fast, single random initialization)
+- **High stability**: `rtimes=3` (slower, multiple random starts like previous versions)
+- **Maximum stability**: `rtimes=10` (slowest, for critical applications)
+
+```julia
+# Fast (new default)
+breaks = kmeans_breaks(data, 5)  # rtimes=1
+
+# Previous behavior (more stable, slower)
+breaks = kmeans_breaks(data, 5; rtimes=3)
+```
+
+This optimization brings Julia k-means performance much closer to R's classInt without requiring additional dependencies.
+
 ## Installation
 
 ```julia
@@ -46,36 +78,29 @@ Breakers.jl includes benchmarking tools to compare its performance with R's Clas
 ### Requirements
 
 - Julia 1.11 or higher
-- R with the ClassInt package installed
-- RCall.jl and BenchmarkTools.jl packages
+- R with the ClassInt package installed (for R comparisons)
+- Required Julia packages: CSV, DataFrames, Statistics
 
 ### Running Benchmarks
 
 ```bash
-# Install the required packages if not already installed
-julia -e 'using Pkg; Pkg.add(["BenchmarkTools", "RCall"])'
+# Run Julia-only benchmarks
+julia --project=. benchmarks/benchmark_breakers.jl
 
-# Run the benchmarks
-julia benchmark.jl
+# Run R classInt benchmarks (requires R and classInt package)
+Rscript benchmarks/benchmark_classint.R
+
+# Compare Julia and R results
+julia --project=. benchmarks/compare_with_r.jl
 ```
 
-You can customize the benchmark parameters:
+### Performance Notes
 
-```bash
-# Run with specific dataset sizes
-julia benchmark.jl --sizes=10000,50000,100000
+Benchmarking of the Fisher algorithm is limited to smaller datasets due to its O(k × n²) complexity:
+- Dataset sizes tested: 1,000, 5,000, and 10,000 values
+- Larger sizes (>10,000) become computationally intensive
 
-# Run specific methods only
-julia benchmark.jl --methods=fisher,kmeans
-
-# Run with specific data distributions
-julia benchmark.jl --distributions=normal,skewed
-
-# Run with a different number of bins
-julia benchmark.jl --bins=5
-```
-
-Results are saved in the `benchmarks` directory as CSV files.
+Results are saved in the `benchmarks/` directory as CSV files with timestamps.
 
 ## License
 

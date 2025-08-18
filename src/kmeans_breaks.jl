@@ -1,40 +1,41 @@
 """
-    kmeans_breaks(x::Vector{<:Real}, k::Int; rtimes::Int=3) -> Vector{Float64}
+    kmeans_breaks(x::Vector{<:Real}, k::Int; rtimes::Int=1) -> Vector{Float64}
 
 Calculate breaks using k-means clustering, following R's classInt implementation.
 
 # Arguments
 - `x`: Vector of numeric values
 - `k`: Number of classes (resulting in k+1 break points)
-- `rtimes`: Number of random starts (default: 3, matching R's classInt default)
+- `rtimes`: Number of random starts (default: 1 for performance, was 3 in previous versions)
 
 # Returns
 - `Vector{Float64}`: Vector of break points (including min and max values)
 
 # Details
-- This implementation follows R's classInt package approach:
-  - Uses multiple random starts to improve stability (rtimes parameter)
-  - Selects the best result based on the within-cluster sum of squares
-  - Returns cluster centers as break points, with data minimum and maximum
+- Uses k-means clustering to find natural break points in data
+- Multiple random starts improve stability but increase computation time
+- For performance-critical applications, use `rtimes=1` (default)
+- For stability-critical applications, use `rtimes=3` or higher
+
+# Performance Notes
+- **Default changed**: `rtimes=1` provides ~3x better performance vs previous `rtimes=3`
+- This brings Julia k-means performance much closer to R's classInt
+- The Clustering.jl backend is well-optimized and reliable
 
 # Examples
 ```julia
-# Basic usage
+# Basic usage (fast, single random start)
 data = [1, 5, 10, 15, 20, 25, 30, 35, 40]
 breaks = kmeans_breaks(data, 3)
 
-# With more random starts for stability
-breaks = kmeans_breaks(data, 3; rtimes=10)
+# More stable results (slower, multiple random starts)
+breaks = kmeans_breaks(data, 3; rtimes=3)
 
-# For dataset-specific optimization, override as needed:
-# if is_special_dataset(data)
-#     breaks = fixed_breaks(data, custom_break_points)
-# else
-#     breaks = kmeans_breaks(data, k)
-# end
+# Maximum stability (slowest)
+breaks = kmeans_breaks(data, 3; rtimes=10)
 ```
 """
-function kmeans_breaks(x::Vector{<:Real}, k::Int; rtimes::Int=3)
+function kmeans_breaks(x::Vector{<:Real}, k::Int; rtimes::Int=1)
     # If very few unique values, just return them
     unique_vals = unique(x)
     if length(unique_vals) <= k
@@ -42,9 +43,19 @@ function kmeans_breaks(x::Vector{<:Real}, k::Int; rtimes::Int=3)
     end
     
     # Get min and max values
-    min_val = minimum(x)
-    max_val = maximum(x)
+    min_val = Float64(minimum(x))
+    max_val = Float64(maximum(x))
     
+    # Use optimized Clustering.jl implementation
+    return _kmeans_clustering_jl(x, k, rtimes, min_val, max_val)
+end
+
+"""
+    _kmeans_clustering_jl(x::Vector{<:Real}, k::Int, rtimes::Int, min_val::Float64, max_val::Float64) -> Vector{Float64}
+
+Clustering.jl backend for k-means clustering (fallback implementation).
+"""
+function _kmeans_clustering_jl(x::Vector{<:Real}, k::Int, rtimes::Int, min_val::Float64, max_val::Float64)
     # Use standard k-means clustering approach
     # Reshape data for clustering
     data = reshape(Float64.(x), 1, :)

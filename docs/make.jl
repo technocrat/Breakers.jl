@@ -13,6 +13,9 @@ makedocs(
     warnonly = [:missing_docs],
     pages = [
         "Home" => "index.md",
+        "Manual" => [
+            "Binning Methods" => "manual/binning_methods.md",
+        ],
         "API Reference" => "api.md",
     ],
 )

@@ -57,14 +57,20 @@ julia --project=. -t auto test/test_threaded_fisher.jl
 
 ### Benchmarking
 ```bash
-# Run default benchmarks comparing to R's classInt
+# Run internal benchmarks (comparing Breakers.jl methods)
 julia benchmark.jl
 
 # Custom benchmark parameters
-julia benchmark.jl --sizes=10000,100000 --methods=fisher,kmeans --bins=5
+julia benchmark.jl --sizes=1000,10000 --methods=fisher,kmeans --bins=5
 
 # Run threaded benchmarks
-julia -t auto benchmark_fisher_threaded.jl
+julia -t auto benchmark.jl --methods=fisher,fisher_threaded
+
+# Run specific algorithm examples
+julia --project=. benchmark_example.jl
+
+# For R classInt comparison (requires RCall.jl)
+julia --project=. examples/r_classint_comparison.jl
 ```
 
 ### Documentation
