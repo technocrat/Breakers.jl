@@ -1,7 +1,7 @@
 """
     fisher_breaks(x::Vector{<:Real}, k::Integer) -> Vector{Float64}
 
-Calculate Fisher's natural breaks for a vector of values.
+Calculate Fisher's natural breaks for a vector of values using exact optimization.
 
 # Arguments
 - `x::Vector{<:Real}`: Vector of observations to be clustered.
@@ -12,41 +12,28 @@ Calculate Fisher's natural breaks for a vector of values.
 
 # Details
 - This function uses Fisher's method of exact optimization to find optimal class breaks.
-- Fisher's method maximizes the between-class sum of squares.
-- For the US counties dataset, exact breaks from R's classInt package are used
-  to ensure perfect compatibility.
-- For other datasets, the function automatically computes optimal breaks.
+- Fisher's method maximizes the between-class sum of squares, minimizing within-class variance.
+- The algorithm uses dynamic programming to find the globally optimal solution.
+- For large datasets, consider using `fisher_breaks_threaded` for better performance.
 
 # Examples
 ```julia
+# Basic usage
 x = [10.0, 12.0, 15.0, 18.0, 20.0, 22.0, 25.0, 28.0, 30.0, 35.0, 40.0, 45.0]
 k = 3
 breaks = fisher_breaks(x, k)
-# Output might be: [10.0, 18.0, 30.0, 45.0]
+# Output: [10.0, 20.0, 30.0, 45.0] (example)
+
+# For dataset-specific optimization, you can override the result:
+# data = load_us_counties_population()  # hypothetical
+# if is_us_counties_dataset(data, k)
+#     breaks = fixed_breaks(data, [73660.0, 208154.0, 467948.0, 776067.0, 1138728.5, 5230000.0])
+# else
+#     breaks = fisher_breaks(data, k)
+# end
 ```
 """
 function fisher_breaks(x::Vector{<:Real}, k::Integer)
-    # For US counties dataset with population data, use exact R breaks
-    if length(x) > 3000 && k == 7 && maximum(x) > 1000000
-        # Get min and max values from this dataset
-        min_val = minimum(x)
-        max_val = maximum(x)
-        
-        # These exact boundary thresholds were determined from R's classInt
-        # They represent the boundaries between bins in the US counties dataset
-        return Float64[
-            min_val,       # Minimum value
-            73660.0,       # Boundary between bin 1 and 2
-            208154.0,      # Boundary between bin 2 and 3
-            467948.0,      # Boundary between bin 3 and 4
-            776067.0,      # Boundary between bin 4 and 5
-            1138728.5,     # Boundary between bin 5 and 6
-            5230000.0,     # Boundary between bin 6 and 7 (adjusted to fix Cook County issue)
-            max_val        # Maximum value (LA County)
-        ]
-    end
-    
-    # For other datasets, use our original algorithm
     # Sort the data
     sorted_x = sort(x)
     
@@ -81,4 +68,4 @@ function fisher_breaks(x::Vector{<:Real}, k::Integer)
     end
     
     return breaks
-end 
+end

@@ -18,6 +18,7 @@ include("fixed_breaks.jl")
 include("kmeans_breaks.jl")
 include("fisher_clustering.jl")
 include("fisher_breaks.jl")
+include("fisher_breaks_threaded.jl")
 include("quantile_breaks.jl")
 include("get_breaks_raw.jl")    
 
@@ -141,9 +142,101 @@ end
 # Include get_breaks.jl after get_bins is defined
 include("get_breaks.jl")  # Include backward compatibility wrapper
 
-export get_breaks, cut_data, equal_breaks, fixed_breaks, 
-       kmeans_breaks, fisher_clustering, fisher_breaks, 
-       quantile_breaks, get_bins, get_bin_indices,
+"""
+    get_bin_indices_fixed(x::Vector{T}, break_points::Vector{<:Real}) where T<:Union{Real, Missing} -> Vector{Int}
+
+Get bin indices using user-specified break points.
+
+# Arguments
+- `x`: Vector of numeric values (will skip missing values)
+- `break_points`: Vector of break point values to use
+
+# Returns
+- `Vector{Int}`: Vector of bin indices for each value in x
+
+# Example
+```julia
+data = [1, 5, 10, 15, 20, 25, 30]
+indices = get_bin_indices_fixed(data, [10, 20])
+# Returns bin indices based on breaks [1.0, 10.0, 20.0, 30.0]
+```
+"""
+function get_bin_indices_fixed(x::Vector{T}, break_points::Vector{<:Real}) where T<:Union{Real, Missing}
+    # Get the breaks using fixed_breaks
+    breaks = fixed_breaks(x, break_points)
+    
+    # Use the standard binning logic
+    indices = zeros(Int, length(x))
+    
+    for i in eachindex(x)
+        if ismissing(x[i])
+            indices[i] = 0  # Use 0 for missing values
+            continue
+        end
+        
+        value = x[i]
+        bin_found = false
+        
+        # Special case for the first bin - include values equal to the minimum
+        if value <= breaks[1]
+            indices[i] = 1
+            bin_found = true
+        else
+            # Assign the bin based on which interval the value falls into
+            for j in 1:length(breaks)-1
+                if value > breaks[j] && value < breaks[j+1]
+                    indices[i] = j
+                    bin_found = true
+                    break
+                end
+                # Special case for values exactly on breakpoints (except minimum)
+                if value == breaks[j+1] && j < length(breaks)-1
+                    indices[i] = j+1
+                    bin_found = true
+                    break
+                end
+            end
+        end
+        
+        # If value is greater than all break points, assign to last bin
+        if !bin_found
+            indices[i] = length(breaks) - 1
+        end
+    end
+    
+    return indices
+end
+
+"""
+    get_bins_fixed(x::Vector{T}, break_points::Vector{<:Real}) where T<:Union{Real, Missing} -> Vector{String}
+
+Get bin labels using user-specified break points.
+
+# Arguments
+- `x`: Vector of numeric values (will skip missing values)
+- `break_points`: Vector of break point values to use
+
+# Returns
+- `Vector{String}`: Vector of bin labels for each value in x
+
+# Example
+```julia
+data = [1, 5, 10, 15, 20, 25, 30]
+labels = get_bins_fixed(data, [10, 20])
+# Returns bin labels based on breaks [1.0, 10.0, 20.0, 30.0]
+```
+"""
+function get_bins_fixed(x::Vector{T}, break_points::Vector{<:Real}) where T<:Union{Real, Missing}
+    # Get the breaks using fixed_breaks
+    breaks = fixed_breaks(x, break_points)
+    
+    # Use cut_data to create the labels
+    return cut_data(x, breaks)
+end
+
+export get_breaks, cut_data, equal_breaks, fixed_breaks, split_at_indices,
+       kmeans_breaks, fisher_clustering, fisher_breaks, fisher_breaks_threaded,
+       quantile_breaks, get_bins, get_bin_indices, get_bin_indices_fixed, get_bins_fixed,
        get_breaks_raw
 
 end # module Breakers

@@ -75,4 +75,33 @@ function get_breaks_raw(x::Vector{T}, n::Int=7) where T<:Union{Real, Missing}
         "quantile" => quantile_br,
         "equal" => equal_br
     )
-end 
+end
+
+"""
+    get_breaks_raw(x::Vector{T}, break_points::Vector{<:Real}; method="fixed") where T<:Union{Real, Missing} -> Dict{String, Vector{Float64}}
+
+Calculate breaks using user-specified break points.
+
+# Arguments
+- `x`: Vector of numeric values (will skip missing values)
+- `break_points`: Vector of break point values to use
+- `method`: Method name for the result dictionary (default: "fixed")
+
+# Returns
+- `Dict{String, Vector{Float64}}`: A dictionary containing the specified break points
+
+# Example
+```julia
+values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+breaks = get_breaks_raw(values, [10, 30, 70])
+# Access break points:
+fixed_breaks = breaks["fixed"]
+```
+"""
+function get_breaks_raw(x::Vector{T}, break_points::Vector{<:Real}; method::String="fixed") where T<:Union{Real, Missing}
+    # Use the fixed_breaks function to create properly formatted breaks
+    breaks_result = fixed_breaks(x, break_points)
+    
+    # Return as dictionary for consistency with other methods
+    return Dict(method => breaks_result)
+end

@@ -7,11 +7,11 @@ using CSV
 
 @testset "Breakers.jl" begin
     @testset "get_bins" begin
-        include("test/test_get_bins.jl")
+        include("test_get_bins.jl")
     end
     
     @testset "SubArrays" begin
-        include("test/test_subarrays.jl")
+        include("test_subarrays.jl")
     end
 end
 
@@ -21,9 +21,13 @@ end
 end
 
 @testset "SubArrays .jl" begin
-    include("test/test_subarrays.jl")
+    include("test_subarrays.jl")
 end
 
 @testset "get_bins.jl" begin
-    include("test/test_get_bins.jl")
+    include("test_get_bins.jl")
+end
+
+@testset "fixed_breaks.jl" begin
+    include("test_fixed_breaks.jl")
 end

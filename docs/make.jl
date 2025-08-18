@@ -10,13 +10,9 @@ makedocs(
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     modules = [Breakers],
     authors = "Richard Careaga and contributors",
+    warnonly = [:missing_docs],
     pages = [
         "Home" => "index.md",
-        "Manual" => [
-            "Getting Started" => "manual/getting_started.md",
-            "Binning Methods" => "manual/binning_methods.md",
-            "R ClassInt Compatibility" => "manual/r_classint_compatibility.md",
-        ],
         "API Reference" => "api.md",
     ],
 )

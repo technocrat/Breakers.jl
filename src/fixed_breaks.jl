@@ -1,49 +1,100 @@
 """
-    fixed_breaks(v::Vector, breaks::Vector{Int})
+    fixed_breaks(x::Vector{<:Real}, break_points::Vector{<:Real}) -> Vector{Float64}
 
-Split a vector `v` into multiple sub-vectors at specified break indices.
+Create breaks using user-specified break points.
 
 # Arguments
-- `v::Vector`: The input vector to be split.
-- `breaks::Vector{Int}`: Indices where the vector should be split.
+- `x`: Vector of numeric values (used for validation and to add min/max if needed)
+- `break_points`: Vector of break point values to use
 
 # Returns
-- `Vector{Vector}`: A vector of sub-vectors created by splitting the original vector at the specified break points.
+- `Vector{Float64}`: Vector of break points including min and max values
 
 # Details
-- Missing values are removed from the input vector before splitting.
-- Break indices are sorted automatically.
-- The function creates segments: [1:breaks[1]], [breaks[1]+1:breaks[2]], ..., [breaks[end]+1:end].
-- Break indices must be within the valid range of the vector (1 to length).
+- This method allows users to specify exact break points rather than letting an algorithm choose them
+- Break points are automatically sorted
+- Minimum and maximum values from the data are added if not already present
+- This integrates with the standard workflow (get_bins, get_bin_indices, cut_data)
 
 # Examples
 ```julia
-v = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-breaks = [3, 7]
-result = fixed_breaks(v, breaks)
-# result == [[1, 2, 3], [4, 5, 6, 7], [8, 9, 10]]
+# Specify custom break points
+data = [1, 5, 10, 15, 20, 25, 30]
+breaks = fixed_breaks(data, [10, 20])  # Returns [1.0, 10.0, 20.0, 30.0]
 
-v_with_missing = [1, missing, 3, 4, 5, missing, 7, 8, 9, 10]
-result = fixed_breaks(v_with_missing, breaks)
-# result == [[1, 3, 4], [5, 7, 8], [9, 10]]
+# Use with standard workflow
+bin_indices = get_bin_indices_fixed(data, [10, 20])
+bin_labels = cut_data(data, fixed_breaks(data, [10, 20]))
+```
 
-Throws
-
-ArgumentError: If any break index is less than 1 or greater than the length of the vector.
+# See also
+- [`get_breaks_raw`](@ref): For accessing all break methods including fixed
+- [`cut_data`](@ref): For applying breaks to create labeled bins
 """
+function fixed_breaks(x::Vector{T}, break_points::Vector{<:Real}) where T<:Union{Real, Missing}
+    if isempty(break_points)
+        error("At least one break point must be specified")
+    end
+    
+    # Remove missing values from input data
+    x_clean = collect(skipmissing(x))
+    
+    if isempty(x_clean)
+        error("Input vector contains no non-missing values")
+    end
+    
+    # Sort break points and convert to Float64
+    breaks_sorted = sort(Float64.(break_points))
+    
+    # Get data range
+    min_val = minimum(x_clean)
+    max_val = maximum(x_clean)
+    
+    # Build final breaks vector with min and max
+    final_breaks = Float64[min_val]
+    
+    # Add user-specified breaks (only those within data range and not duplicating existing)
+    for bp in breaks_sorted
+        if bp > min_val && bp < max_val && bp > final_breaks[end]
+            push!(final_breaks, bp)
+        end
+    end
+    
+    # Add maximum (unless it equals minimum for single-value data or is already included)
+    if max_val > final_breaks[end]
+        push!(final_breaks, max_val)
+    end
+    
+    return final_breaks
+end
 
+# Legacy function for backward compatibility - splits into sub-vectors
+"""
+    split_at_indices(v::Vector, indices::Vector{Int}) -> Vector{Vector}
 
-function fixed_breaks(v::Vector, breaks::Vector{Int})
+Split a vector into multiple sub-vectors at specified indices (legacy function).
+
+# Arguments
+- `v::Vector`: The input vector to be split
+- `indices::Vector{Int}`: Indices where the vector should be split
+
+# Returns
+- `Vector{Vector}`: A vector of sub-vectors created by splitting at the specified indices
+
+# Note
+This is a legacy function. For modern workflow integration, use `fixed_breaks` with actual values.
+"""
+function split_at_indices(v::Vector, indices::Vector{Int})
     # Ensure the breaks are sorted and within bounds
-    breaks = sort(breaks)
-    if any(b < 1 || b > length(v) for b in breaks)
+    indices = sort(indices)
+    if any(i < 1 || i > length(v) for i in indices)
         throw(ArgumentError("Break indices must be within the range of the vector."))
     end
     # Remove missing values
     v_clean = collect(skipmissing(v))
     # Add start and end points to the break indices
-    all_breaks = [0; breaks; length(v_clean)]
+    all_indices = [0; indices; length(v_clean)]
     
-    # Split the vector into sub-vectors based on the breaks
-    return [v_clean[all_breaks[i]+1:all_breaks[i+1]] for i in 1:length(all_breaks)-1]
+    # Split the vector into sub-vectors based on the indices
+    return [v_clean[all_indices[i]+1:all_indices[i+1]] for i in 1:length(all_indices)-1]
 end

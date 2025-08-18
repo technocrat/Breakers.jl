@@ -25,27 +25,6 @@ breaks = fisher_breaks_threaded(x, k)
 ```
 """
 function fisher_breaks_threaded(x::Vector{<:Real}, k::Integer)
-    # For US counties dataset with population data, use exact R breaks
-    if length(x) > 3000 && k == 7 && maximum(x) > 1000000
-        # Get min and max values from this dataset
-        min_val = minimum(x)
-        max_val = maximum(x)
-        
-        # These exact boundary thresholds were determined from R's classInt
-        # They represent the boundaries between bins in the US counties dataset
-        return Float64[
-            min_val,       # Minimum value
-            73660.0,       # Boundary between bin 1 and 2
-            208154.0,      # Boundary between bin 2 and 3
-            467948.0,      # Boundary between bin 3 and 4
-            776067.0,      # Boundary between bin 4 and 5
-            1138728.5,     # Boundary between bin 5 and 6
-            5230000.0,     # Boundary between bin 6 and 7 (adjusted to fix Cook County issue)
-            max_val        # Maximum value (LA County)
-        ]
-    end
-    
-    # For other datasets, use threaded algorithm
     # Sort the data
     sorted_x = sort(x)
     
