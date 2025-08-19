@@ -2,7 +2,7 @@
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "5d30f14c5337cc86268b8ebe7457eed07c5dab90"
+project_hash = "70e5e31d0925ca6d5d8d6f49b85e85b6030fd6d7"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -43,12 +43,6 @@ deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers
 git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.15"
-
-[[deps.ClusterAnalysis]]
-deps = ["LinearAlgebra", "NearestNeighbors", "Statistics", "Tables"]
-git-tree-sha1 = "383f6b3c54491f62321e17005a5e0cc50acb73f9"
-uuid = "10587292-549a-4141-aed9-b9dca56acf27"
-version = "0.1.0"
 
 [[deps.Clustering]]
 deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase"]
