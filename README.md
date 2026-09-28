@@ -1,9 +1,11 @@
 # Breakers.jl
 
+[![Docs: stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://technocrat.github.io/Breakers.jl/stable/)
+[![Docs: dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://technocrat.github.io/Breakers.jl/dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Julia](https://img.shields.io/badge/julia-%3E=1.6-blue.svg)](https://julialang.org/)
+[![Julia](https://img.shields.io/badge/julia-%3E=1.11-blue.svg)](https://julialang.org/)
 
-**Fast, flexible data binning for Julia** - A high-performance package for dividing vectors into intervals, with full compatibility with R's classInt package.
+**Fast, flexible data binning for Julia** - A high-performance package for dividing vectors into intervals, compatible with R's classInt package.
 
 ## 🎯 Key Features
 
@@ -15,27 +17,30 @@
 - **Fixed breaks** - User-defined breakpoints
 
 ### 🚀 **Performance Optimized**
-- **3-8x faster** than R for simple algorithms (equal, quantile)
-- **3.7x faster** k-means through algorithmic optimization
+- **Exact Fisher-Jenks breaks** in O(k × n × log n) time: 17x faster than R at 1,000 points and 121x faster at 10,000 on the full data
+- **1.5-10x faster** than R for simple algorithms (equal, quantile), depending on data size
+- **~3.3x faster** k-means by default, using one random start instead of three (`rtimes=1`)
 - Smart algorithm selection guidance for different data sizes
 - Comprehensive benchmarking against R's classInt
 
 ### 🔧 **Developer Friendly**
-- **Zero breaking changes** - automatic performance benefits
 - Full R classInt compatibility for easy migration
 - Extensive documentation and examples
-- Thread-safe implementations available
 
 ## ⚡ Algorithm Performance Comparison
 
 ### Julia vs R Performance Summary
 
-| Algorithm | Julia Time | R Time | Julia vs R | Winner |
-|-----------|------------|--------|------------|---------|
-| **Equal intervals** | 0.01ms | 0.03ms | **3.4x faster** | 🟢 **Julia** |
-| **Quantile breaks** | 0.01ms | 0.08ms | **7.7x faster** | 🟢 **Julia** |
-| **K-means clustering** | 0.50ms | 0.30ms | **1.7x slower** | 🟡 **R** (close) |
-| **Fisher-Jenks** | 3.19ms | 1.83ms | **1.7x slower** | 🟡 **R** |
+| Algorithm | Julia Time (1K) | R Time (1K) | Julia vs R (1K) | Julia vs R (10K) | Winner |
+|-----------|-----------------|-------------|-----------------|------------------|---------|
+| **Equal intervals** | 0.010ms | 0.040ms | **3.9x faster** | **2.8x faster** | 🟢 **Julia** |
+| **Quantile breaks** | 0.009ms | 0.096ms | **10.5x faster** | **1.5x faster** | 🟢 **Julia** |
+| **K-means clustering** | 0.57ms | 0.42ms | **1.4x slower** | **3.6x slower** | 🟡 **R** |
+| **Fisher-Jenks** | 0.14ms | 2.32ms | **17x faster** | **121x faster**\* | 🟢 **Julia** |
+
+Times are medians for 7 classes, averaged over normal, uniform and skewed data, measured in September 2026 on an Apple M1 Max (R timed with microbenchmark). They are measured after a warm-up. Breakers precompiles its common call paths, so the first call in a new session takes about as long as later ones; `using Breakers` itself takes about 0.4s, almost all of it loading Clustering.jl.
+
+\* Compared with R on the full data (`largeN = Inf`). With its default settings classInt computes Fisher breaks from a sample of at most 3,000 values when there are more than 3,000 (see [Fisher-Jenks](#fisher-jenks-natural-breaks-algorithm) below). Even then, Breakers is 1.5x faster at 10,000 points (1.8ms against 2.6ms) and gives the optimal breaks.
 
 ### 📊 Algorithm Selection Guide
 
@@ -43,11 +48,11 @@ Choose the right algorithm based on your data characteristics and performance re
 
 | Your Priority | Recommended Algorithm | Why? |
 |---------------|----------------------|------|
-| **Data has natural clusters** | Fisher-Jenks (N<5K) or K-means | Optimizes for natural groupings |
+| **Data has natural clusters** | Fisher-Jenks or K-means | Optimizes for natural groupings |
 | **Equal representation per bin** | Quantile breaks | Each bin contains same number of observations |
 | **Interpretable round numbers** | Equal intervals | Easy to understand, clean boundaries |
-| **Maximum performance** | Equal intervals | O(1) complexity, 3.4x faster than R |
-| **Large datasets (N>10K)** | Quantile breaks | O(n log n), 7.7x faster than R |
+| **Maximum performance** | Equal intervals | 2.8-3.9x faster than R |
+| **Large datasets (N>10K)** | Quantile breaks | O(n log n), 1.5x faster than R at 10K |
 | **Real-time applications** | Equal intervals | Fastest possible, consistent performance |
 
 ### Performance by Dataset Size
@@ -57,25 +62,27 @@ Choose the right algorithm based on your data characteristics and performance re
 | **Equal intervals** | ✅ Excellent | ✅ Excellent | ✅ Excellent | ✅ Excellent |
 | **Quantile breaks** | ✅ Excellent | ✅ Excellent | ✅ Excellent | ✅ Excellent |
 | **K-means** | ✅ Excellent | ✅ Good | ⚠️ Fair | ⚠️ Slow |
-| **Fisher-Jenks** | ✅ Excellent | ⚠️ Fair | ❌ Slow | ❌ Too slow |
+| **Fisher-Jenks** | ✅ Excellent | ✅ Excellent | ✅ Excellent | ✅ Excellent |
 
 ## Performance Considerations
 
 ### Fisher-Jenks Natural Breaks Algorithm
 
-The Fisher-Jenks algorithm has **O(k × n²)** time complexity where `k` is the number of classes and `n` is the number of data points. This makes it computationally intensive for large datasets.
+Breakers computes exact Fisher-Jenks breaks in **O(k × n × log n)** time, where `k` is the number of classes and `n` is the number of data points. It uses the same dynamic program as the classic O(k × n²) algorithm, but finds each optimal split by divide and conquer, because the optimal split point moves monotonically (see [Fisher's Natural Breaks Classification complexity proof](https://geodms.nl/docs/fisher's-natural-breaks-classification-complexity-proof.html)). The breaks are the same as the classic algorithm's.
 
-**Recommendations:**
-- Use Fisher-Jenks for datasets with fewer than **5,000 distinct values** for practical performance
-- For larger datasets, consider using `quantile_breaks` or `equal_breaks` which have much better performance characteristics
-- For very large datasets (>10,000 values), consider pre-sampling your data before applying Fisher-Jenks
+| Points | Breakers | R classInt, full data | R classInt, default settings |
+|--------|----------|-----------------------|------------------------------|
+| 1,000 | 0.14ms | 2.3ms | 2.3ms |
+| 10,000 | 1.8ms | 213ms | 2.6ms (sampled) |
+| 50,000 | 9.7ms | 5.4s | 27ms (sampled) |
+| 200,000 | 42ms | 80s | 42ms (sampled) |
+| 1,000,000 | 234ms | ~30 min (estimated) | 64ms (sampled) |
 
-**Fisher-Jenks vs R Performance Gap:**
-- **Small datasets (1,000 points)**: 1.7x slower than R (acceptable)
-- **Large datasets (10,000 points)**: 154x slower than R (critical gap)
+Times are medians for 7 classes, measured as in the table above; R's full-data time at 200,000 points is for skewed data only.
 
-**Future Enhancements:**
-A future version will implement the more efficient **O(k × n × log(n))** algorithm described in [Fisher's Natural Breaks Classification complexity proof](https://geodms.nl/docs/fisher's-natural-breaks-classification-complexity-proof.html) for better performance on large datasets.
+**R's sampling:** above 3,000 values, classInt computes Fisher breaks from a random sample of 10% of the values, capped at 3,000, unless `largeN` is raised. The breaks then differ from run to run and are not optimal. On the 3,222 US county populations in `test/bin_ref.csv`, the within-class error of the sampled breaks was a median 1.9x the optimum (up to 4.2x) over 20 runs; on 200,000 skewed values it was a median 1.25x (up to 1.4x). Breakers always uses all the data.
+
+**Memory:** O(k × n), about 110MB for 1,000,000 values and 7 classes.
 
 ### K-means Clustering Performance Optimization
 
@@ -134,18 +141,11 @@ using Random
 Random.seed!(42)
 data = randn(10000) .* 100 .+ 500  # Normal distribution around 500
 
-# For large datasets, choose algorithms wisely:
-if length(data) > 5000
-    # Use fast algorithms for large data
-    breaks = quantile_breaks(data, 5)    # 7.7x faster than R!
-    println("Used quantile breaks for optimal performance")
-else
-    # Use Fisher-Jenks for smaller datasets
-    breaks = fisher_breaks(data, 5)      # Optimal clustering
-    println("Used Fisher-Jenks for optimal clustering")
-end
+# Exact optimal breaks, about 2ms for 10,000 values
+breaks = fisher_breaks(data, 5)
 
-bin_indices = get_bin_indices(data, breaks)
+# Interval label for each value
+labels = cut_data(data, breaks)
 println("Data binned into $(length(breaks)-1) bins")
 ```
 
@@ -193,25 +193,16 @@ max_stable_breaks = kmeans_breaks(data, 5; rtimes=10)   # Most stable
 println("Performance vs stability trade-offs available")
 ```
 
-### Example 4: Thread-Safe Fisher-Jenks (Experimental)
+### Example 4: Fisher-Jenks on Large Datasets
 
 ```julia
 using Breakers
-using Base.Threads
 
-# Large dataset that benefits from threading
-data = randn(8000) .* 50 .+ 100
+# 200,000 values, for example census block groups
+data = exp.(randn(200_000)) .* 100
 
-# Standard implementation
-@time breaks1 = fisher_breaks(data, 5)
-
-# Multi-threaded implementation (if available)
-if nthreads() > 1
-    @time breaks2 = fisher_breaks_threaded(data, 5)
-    println("Threading available with $(nthreads()) threads")
-else
-    println("Single-threaded execution (use `julia -t 4` for threading)")
-end
+# Exact optimal breaks on the full data in about 40ms
+@time breaks = fisher_breaks(data, 7)
 ```
 
 ### Example 5: Dataset-Specific Optimizations
@@ -269,17 +260,17 @@ See the [`benchmarks/`](benchmarks/) directory for:
 - **Algorithm-specific deep dives**
 - **Performance improvement summaries**
 
-Benchmarking of the Fisher algorithm is limited to smaller datasets due to its O(k × n²) complexity:
-- Dataset sizes tested: 1,000, 5,000, and 10,000 values
-- Larger sizes (>10,000) become computationally intensive
+The saved results in `benchmarks/` date from August 2025, before the O(k × n × log n) Fisher-Jenks algorithm; the tables above are current.
 
 Results are automatically saved as timestamped CSV files for reproducibility.
 
 ## 📚 Documentation
 
 ### 🔗 **Full Documentation**
-- **[Algorithm Guide](docs/src/manual/binning_methods.md)** - Detailed explanation of each method
-- **[Performance Roadmap](docs/PERFORMANCE_ROADMAP.md)** - Future optimization plans
+- **[Online documentation](https://technocrat.github.io/Breakers.jl/stable/)** - Manual and API reference ([development version](https://technocrat.github.io/Breakers.jl/dev/))
+- **[Algorithm Guide](https://technocrat.github.io/Breakers.jl/stable/manual/binning_methods/)** - Detailed explanation of each method
+- **[R classInt Compatibility](https://technocrat.github.io/Breakers.jl/stable/manual/r_classint_compatibility/)** - What matches R exactly, and what differs
+- **[Performance Roadmap](docs/PERFORMANCE_ROADMAP.md)** - Historical record of earlier optimization plans
 - **[Benchmark Analysis](benchmarks/README.md)** - Comprehensive performance analysis
 
 ### 🎓 **Learning Resources**
@@ -289,22 +280,13 @@ Results are automatically saved as timestamped CSV files for reproducibility.
 
 ## 🚧 Development Roadmap
 
-### ✅ **Phase 1: Completed (v1.0)**
-- K-means optimization (3.7x speedup) ✅
+### ✅ **Completed**
+- K-means default of one random start (~3.3x speedup) ✅
+- **Fisher-Jenks O(k × n × log n)** algorithm, 17-121x faster than R on the full data ✅
+- Precompiled common call paths, so first calls are fast ✅
 - Comprehensive benchmarking infrastructure ✅
 - Performance documentation and guidance ✅
 - R classInt compatibility validation ✅
-
-### 🎯 **Phase 2: Near-term (3-6 months)**
-- **Fisher-Jenks O(k × n × log n)** algorithm implementation
-- Expected improvement: 10-100x for large datasets
-- Target: Practical performance up to 50,000 points
-
-### 🔮 **Phase 3: Future (6-12 months)**
-- **BLAS/LAPACK optimization** for matrix operations
-- **Multi-threading enhancements** for all algorithms
-- **Binary artifact integration** for C/FORTRAN libraries (if needed)
-- **Memory access pattern optimization**
 
 ## 🤝 Contributing
 

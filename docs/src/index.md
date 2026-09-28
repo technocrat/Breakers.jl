@@ -9,7 +9,7 @@ Breakers.jl provides functions for creating class intervals for mapping or visua
 ## Features
 
 - Multiple binning methods including Fisher-Jenks natural breaks, k-means clustering, quantile-based, and equal interval binning
-- Exact compatibility with R's classInt package for consistent results across languages
+- Compatibility with R's classInt package: identical quantile, equal interval and full-data Fisher-Jenks results
 - Support for both numeric binning (indices) and categorical binning (strings)
 - Proper handling of missing values
 - Support for SubArrays and various input types
@@ -43,4 +43,4 @@ fisher_indices = bin_indices["fisher"]
 
 ## Comparison with R's classInt
 
-Breakers.jl has been extensively tested for compatibility with R's classInt package and produces identical results for all binning methods. This makes it perfect for workflows that need to maintain consistency between R and Julia. 
+Breakers.jl produces the same quantile, equal interval and Fisher-Jenks results as R's classInt package, which helps keep R and Julia workflows consistent. See [R classInt Compatibility](manual/r_classint_compatibility.md) for the details, including how classInt samples large datasets for Fisher-Jenks and why k-means results vary. 

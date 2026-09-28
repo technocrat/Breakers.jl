@@ -1,5 +1,11 @@
 # API Reference
 
+## Types
+
+```@docs
+Breakers.Breaks
+```
+
 ## Main Functions
 
 ```@docs
@@ -16,11 +22,18 @@ cut_data
 
 ```@docs
 fisher_breaks
-fisher_breaks_threaded
 fisher_clustering
 kmeans_breaks
 quantile_breaks
 equal_breaks
 fixed_breaks
 split_at_indices
+```
+
+## Internal Functions
+
+These functions are not part of the public API and may change without notice.
+
+```@docs
+Breakers._kmeans_clustering_jl
 ```

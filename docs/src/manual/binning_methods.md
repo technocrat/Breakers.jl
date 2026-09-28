@@ -17,41 +17,23 @@ fisher_bins = bins["fisher"]
 
 Fisher-Jenks is particularly useful for data that forms natural clusters. It tries to find "gaps" in the data distribution and place break points optimally to minimize in-class variance.
 
-### ⚠️ Performance Considerations
+### Performance
 
-The Fisher-Jenks algorithm has **O(k × n²)** computational complexity, making it computationally intensive for large datasets:
+Breakers computes exact Fisher-Jenks breaks in **O(k × n × log n)** time. It uses the same dynamic program as the classic O(k × n²) algorithm, but finds each optimal split by divide and conquer, because the optimal split point moves monotonically. The breaks are the same as the classic algorithm's.
 
-| Dataset Size | Typical Performance | Recommendation |
-|--------------|---------------------|----------------|
-| **< 1,000 values** | **< 5ms** | ✅ **Excellent** - Use freely |
-| **1,000-5,000 values** | **5-100ms** | ✅ **Good** - Practical for most use cases |
-| **5,000-10,000 values** | **100-500ms** | ⚠️ **Slow** - Consider alternatives |
-| **> 10,000 values** | **> 500ms** | ❌ **Too slow** - Use quantile or equal breaks |
+| Points | Breakers | R classInt, full data | R classInt, default settings |
+|--------|----------|-----------------------|------------------------------|
+| 1,000 | 0.14ms | 2.3ms | 2.3ms |
+| 10,000 | 1.8ms | 213ms | 2.6ms (sampled) |
+| 50,000 | 9.7ms | 5.4s | 27ms (sampled) |
+| 200,000 | 42ms | 80s | 42ms (sampled) |
+| 1,000,000 | 234ms | ~30 min (estimated) | 64ms (sampled) |
 
-**Performance Comparison with R's classInt (N=10,000)**:
-- **Julia**: ~308ms (pure Julia implementation)
-- **R**: ~2ms (optimized C/FORTRAN)
-- **Performance gap**: ~154x slower
+Times are medians for 7 classes, measured in September 2026 on an Apple M1 Max; R's full-data time at 200,000 points is for skewed data only.
 
-**Why the difference?** R's Fisher-Jenks implementation uses decades-optimized C/FORTRAN code with specialized memory access patterns, while Julia uses a general-purpose dynamic programming approach.
+**Note on R's defaults**: above 3,000 values, classInt computes Fisher breaks from a random sample of 10% of the values, capped at 3,000, unless `largeN` is raised. The breaks then differ from run to run and are not optimal: on the 3,222 US county populations in `test/bin_ref.csv`, the within-class error of the sampled breaks was a median 1.9x the optimum over 20 runs. Breakers.jl always uses the full data.
 
-**Recommendations**:
-1. **For N < 5,000**: Fisher-Jenks provides excellent results with reasonable performance
-2. **For N > 5,000**: Consider pre-sampling data or using `quantile_breaks` (7.7x faster than R!)
-3. **For N > 10,000**: Use `equal_breaks` or `quantile_breaks` for practical performance
-
-### Threaded Fisher-Jenks Implementation
-
-For large datasets, a multi-threaded implementation of the Fisher-Jenks algorithm is also available. This can provide significant performance improvements on multi-core systems.
-
-```julia
-using Threads  # Make sure threading is enabled
-
-# Get threaded Fisher breaks - same interface as the standard version
-fisher_breaks = Breakers.fisher_breaks_threaded(data, 5)
-```
-
-The threaded implementation produces identical results to the standard version but can be significantly faster for large datasets when multiple CPU cores are available. To check how many threads Julia is using, run `Threads.nthreads()`.
+**Memory**: O(k × n), about 110MB for 1,000,000 values and 7 classes.
 
 ## K-means Clustering
 
@@ -84,8 +66,8 @@ breaks = kmeans_breaks(data, 5; rtimes=3)  # ~1.5ms for 1K points
 ```
 
 **Performance vs R's classInt**:
-- **Julia**: 1.7x slower (much improved from previous 7.8x slower)
-- **Julia** outperforms R for smaller datasets due to reduced overhead
+- **1,000 points**: Julia is 1.4x slower (much improved from previous 7.8x slower)
+- **10,000 points**: Julia is 3.6x slower
 
 ## Quantile Breaks
 
@@ -104,7 +86,7 @@ Quantile breaks ensure each bin contains approximately the same number of data p
 
 ### 🚀 Excellent Performance
 
-**Performance**: Quantile breaks are **7.7x faster than R's classInt** and scale efficiently:
+**Performance**: Quantile breaks are **10.5x faster than R's classInt** at 1,000 points and **1.5x faster** at 10,000:
 - **Complexity**: O(n log n) - excellent scaling
 - **Typical performance**: < 1ms for most dataset sizes
 - **Memory efficient**: No large matrices required
@@ -132,9 +114,9 @@ Equal interval breaks are the simplest to understand but may not represent the d
 
 ### ⚡ Fastest Performance
 
-**Performance**: Equal interval breaks are **3.4x faster than R's classInt** with the best scaling:
-- **Complexity**: O(1) - constant time regardless of data size
-- **Typical performance**: < 0.1ms for any dataset size
+**Performance**: Equal interval breaks are **3.9x faster than R's classInt** at 1,000 points and **2.8x faster** at 10,000:
+- **Complexity**: O(n) - a single pass to find the minimum and maximum
+- **Typical performance**: < 0.1ms for 10,000 values
 - **Memory efficient**: Minimal memory usage
 
 **When to use**:
@@ -152,52 +134,41 @@ Choose the right algorithm based on your data characteristics and performance re
 
 | Your Priority | Recommended Algorithm | Why? |
 |---------------|----------------------|------|
-| **Data has natural clusters** | Fisher-Jenks (N<5K) or K-means | Optimizes for natural groupings |
+| **Data has natural clusters** | Fisher-Jenks or K-means | Optimizes for natural groupings |
 | **Equal representation per bin** | Quantile breaks | Each bin contains same number of observations |
 | **Interpretable round numbers** | Equal intervals | Easy to understand, clean boundaries |
-| **Maximum performance** | Equal intervals | O(1) complexity, 3.4x faster than R |
-| **Large datasets (N>10K)** | Quantile breaks | O(n log n), 7.7x faster than R |
+| **Maximum performance** | Equal intervals | 2.8-3.9x faster than R |
+| **Large datasets (N>10K)** | Quantile breaks | O(n log n), 1.5x faster than R at 10K |
 | **Real-time applications** | Equal intervals | Fastest possible, consistent performance |
 
 ### 🎯 **Performance Ranking** (1K data points)
 
 | Rank | Algorithm | Julia Time | vs R Performance | Complexity |
 |------|-----------|------------|------------------|------------|
-| 🥇 **1st** | Equal intervals | **0.01ms** | **3.4x faster** | O(1) |
-| 🥈 **2nd** | Quantile | **0.01ms** | **7.7x faster** | O(n log n) |
-| 🥉 **3rd** | K-means | **0.50ms** | **1.7x slower** | O(k×n×i) |
-| 4th | Fisher-Jenks | **3.19ms** | **1.7x slower** | O(k×n²) |
+| 🥇 **1st** | Equal intervals | **0.010ms** | **3.9x faster** | O(n) |
+| 🥈 **2nd** | Quantile | **0.009ms** | **10.5x faster** | O(n log n) |
+| 🥉 **3rd** | Fisher-Jenks | **0.14ms** | **17x faster** | O(k×n×log n) |
+| 4th | K-means | **0.57ms** | **1.4x slower** | O(k×n×i) |
 
 ### 📈 **Scaling Recommendations**
 
 ```julia
 # Dataset size-based recommendations
 function recommend_algorithm(data_size::Int)
-    if data_size < 1_000
+    if data_size < 10_000
         "Any algorithm - all perform well"
-    elseif data_size < 5_000
-        "Fisher-Jenks OK, K-means good, Quantile/Equal excellent"
-    elseif data_size < 10_000  
-        "Avoid Fisher-Jenks, K-means OK, Quantile/Equal recommended"
     else
-        "Use Quantile or Equal breaks only - others too slow"
+        "Fisher-Jenks, Quantile and Equal breaks all fast; K-means slower"
     end
 end
 ```
 
 ### 🔬 **Quality vs Performance Trade-off**
 
-- **Highest Quality**: Fisher-Jenks (for clustered data, N<5K)
+- **Highest Quality**: Fisher-Jenks (optimal breaks for clustered data)
 - **Balanced**: K-means (good clustering, reasonable speed)
 - **High Performance**: Quantile (excellent speed, equal representation)
 - **Maximum Speed**: Equal intervals (fastest, but may not fit data well)
-
-### ⚡ **Future Improvements**
-
-The Fisher-Jenks performance gap with R may be addressed in future versions through:
-1. **O(k × n × log n) algorithm implementation** (10-100x improvement)
-2. **BLAS/LAPACK optimization** for matrix operations
-3. **C/FORTRAN integration** via BinaryBuilder.jl (if pure Julia approaches insufficient)
 
 ## Handling Boundary Values
 

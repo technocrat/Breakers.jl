@@ -1,5 +1,7 @@
 # Performance Optimization Roadmap for Breakers.jl
 
+> **Historical document.** This roadmap records plans made in 2025 and is no longer maintained. Several statements in it are out of date: the ClusterAnalysis.jl integration was later removed, and the large Fisher-Jenks gap with R that motivated the C/FORTRAN options came from R sampling the data. Breakers.jl now computes exact Fisher-Jenks breaks in O(k × n × log n) time, faster than R. See the README for current performance.
+
 This document outlines the current performance optimizations and future enhancement opportunities for Breakers.jl, particularly focusing on k-means clustering performance.
 
 ## Current Implementation Status
