@@ -330,8 +330,8 @@ If you use Breakers.jl in your research, please cite:
   title = {Breakers.jl: Fast and Flexible Data Binning for Julia},
   author = {Careaga, Richard},
   url = {https://github.com/technocrat/Breakers.jl},
-  version = {0.1.0},
-  year = {2025}
+  version = {0.2.0},
+  year = {2026}
 }
 ```
 
