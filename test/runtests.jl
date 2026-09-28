@@ -31,3 +31,7 @@ end
 @testset "fixed_breaks.jl" begin
     include("test_fixed_breaks.jl")
 end
+
+@testset "bin_ref.jl" begin
+    include("test_bin_ref.jl")
+end
