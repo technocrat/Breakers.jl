@@ -13,6 +13,10 @@ Calculate breaks using k-means clustering, following R's classInt implementation
 
 # Details
 - Uses k-means clustering to find natural break points in data
+- As in classInt, each interior break lies midway between the largest value
+  of one cluster and the smallest value of the next
+- Results can differ between calls because k-means starts from random
+  centers; use `Random.seed!` for repeatable results
 - Multiple random starts improve stability but increase computation time
 - For performance-critical applications, use `rtimes=1` (default)
 - For stability-critical applications, use `rtimes=3` or higher
@@ -63,26 +67,35 @@ function _kmeans_clustering_jl(x::Vector{<:Real}, k::Int, rtimes::Int, min_val::
     # Run k-means multiple times with different random initializations
     # and keep the best result (lowest total within-cluster sum of squares)
     best_wcss = Inf
-    best_centers = nothing
-    
+    best_result = nothing
+
     for i in 1:rtimes
         # Run k-means clustering with more iterations
         result = kmeans(data, k; maxiter=200)
-        
+
         # Calculate within-cluster sum of squares
         wcss = result.totalcost
-        
+
         # Keep the best result
         if wcss < best_wcss
             best_wcss = wcss
-            best_centers = result.centers
+            best_result = result
         end
     end
-    
-    # Get cluster centers and sort them
-    centers = vec(best_centers)
-    sort!(centers)
-    
-    # Return complete breaks including min and max
-    return unique([min_val; centers; max_val])
+
+    # Range of each non-empty cluster, ordered by cluster center
+    assignments = best_result.assignments
+    order = sortperm(vec(best_result.centers))
+    ranges = Tuple{Float64, Float64}[]
+    for c in order
+        members = x[assignments .== c]
+        isempty(members) && continue
+        push!(ranges, (Float64(minimum(members)), Float64(maximum(members))))
+    end
+
+    # As in classInt, interior breaks lie midway between the maximum of one
+    # cluster and the minimum of the next
+    interior = [(ranges[i][2] + ranges[i+1][1]) / 2 for i in 1:length(ranges)-1]
+
+    return unique([min_val; interior; max_val])
 end

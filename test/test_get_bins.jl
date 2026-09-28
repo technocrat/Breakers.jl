@@ -2,7 +2,11 @@
 
 using Test
 using Breakers
+using Random
 using Statistics
+
+# k-means uses random starting centers; fix the seed so runs are repeatable
+Random.seed!(20260928)
 
 @testset "Breakers.get_bins Tests" begin
     # Create a test vector with various values
@@ -78,7 +82,7 @@ using Statistics
         expected_indices = [1, 1, 2, 2, 3, 3, 3]
         
         # Test all methods
-        for method in ["fisher", "kmeans", "quantile", "equal"]
+        for method in ["fisher", "quantile", "equal"]
             # Override the automatic breaks with our manual ones for this test
             bin_indices = zeros(Int, length(boundary_values))
             
@@ -123,10 +127,15 @@ using Statistics
             @test indices[method][3] == 2  # 10 -> bin 2 (exactly on boundary, goes to higher bin)
             @test indices[method][5] == 3  # 20 -> bin 3 (exactly on boundary, goes to higher bin)
             
-            # The maximum value can be handled differently by different algorithms,
-            # Either as the last bin (3) or as a potential outlier bin (4)
-            @test indices[method][7] in [3, 4]  # 30 -> bin 3 or 4 (maximum)
+            @test indices[method][7] == 3  # 30 -> bin 3 (maximum)
         end
+        
+        # k-means breaks fall midway between clusters, so no value lies on a
+        # break; check that the data are split into exactly 3 ordered bins
+        @test issorted(indices["kmeans"])
+        @test indices["kmeans"][1] == 1
+        @test indices["kmeans"][7] == 3
+        @test Set(indices["kmeans"]) == Set(1:3)
         
         # Test string labeling via cut_data
         string_bins = Breakers.cut_data(boundary_values, manual_breaks)

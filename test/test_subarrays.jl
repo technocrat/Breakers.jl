@@ -4,6 +4,10 @@
 # Test script for SubArray handling in Breakers.jl
 using Test
 using Breakers
+using Random
+
+# k-means uses random starting centers; fix the seed so runs are repeatable
+Random.seed!(20260928)
 
 @testset "SubArray Handling in Breakers.jl" begin
     @testset "Basic functionality" begin
@@ -57,7 +61,7 @@ using Breakers
         indices_sub = Breakers.get_bin_indices(sub_boundary, 3)
         
         # Test boundary handling with SubArray
-        for method in ["fisher", "kmeans", "quantile", "equal"]
+        for method in ["fisher", "quantile", "equal"]
             # Check boundary handling specifically
             # - Values at the minimum break (0) should be in bin 1
             # - Values exactly on interior breaks (10, 20) should be in the higher bin
@@ -66,10 +70,15 @@ using Breakers
             @test indices_sub[method][3] == 2  # 10 -> bin 2 (exactly on boundary, goes to higher bin)
             @test indices_sub[method][5] == 3  # 20 -> bin 3 (exactly on boundary, goes to higher bin)
             
-            # The maximum value can be handled differently by different algorithms,
-            # Either as the last bin (3) or as a potential outlier bin (4)
-            @test indices_sub[method][7] in [3, 4]  # 30 -> bin 3 or 4 (maximum)
+            @test indices_sub[method][7] == 3  # 30 -> bin 3 (maximum)
         end
+        
+        # k-means breaks fall midway between clusters, so no value lies on a
+        # break; check that the data are split into exactly 3 ordered bins
+        @test issorted(indices_sub["kmeans"])
+        @test indices_sub["kmeans"][1] == 1
+        @test indices_sub["kmeans"][7] == 3
+        @test Set(indices_sub["kmeans"]) == Set(1:3)
         
         # Test string labels from cut_data with SubArrays
         # We need to collect the SubArray since cut_data doesn't accept SubArrays directly
