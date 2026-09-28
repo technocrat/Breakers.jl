@@ -328,9 +328,9 @@ If you use Breakers.jl in your research, please cite:
 ```bibtex
 @software{breakers_jl,
   title = {Breakers.jl: Fast and Flexible Data Binning for Julia},
-  author = {Technocrat},
+  author = {Careaga, Richard},
   url = {https://github.com/technocrat/Breakers.jl},
-  version = {1.0},
+  version = {0.1.0},
   year = {2025}
 }
 ```
