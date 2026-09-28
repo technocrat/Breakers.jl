@@ -7,3 +7,7 @@ docs/build.zip
 
 # Local tool state
 .serena/
+
+# Manifests are resolved per Julia version; CI resolves from Project.toml
+Manifest.toml
+docs/Manifest.toml

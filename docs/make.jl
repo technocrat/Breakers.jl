@@ -15,6 +15,7 @@ makedocs(
         edit_link = "main",
     ),
     modules = [Breakers],
+    repo = Remotes.GitHub("technocrat", "Breakers.jl"),
     authors = "Richard Careaga and contributors",
     warnonly = [:missing_docs],
     pages = [
