@@ -14,7 +14,7 @@ Calculate Fisher's natural breaks for a vector of values using exact optimizatio
 - This function uses Fisher's method of exact optimization to find optimal class breaks.
 - Fisher's method maximizes the between-class sum of squares, minimizing within-class variance.
 - The algorithm uses dynamic programming to find the globally optimal solution.
-- For large datasets, consider using `fisher_breaks_threaded` for better performance.
+- Runs in O(k × n × log n) time, so it is practical for hundreds of thousands of values.
 
 # Examples
 ```julia

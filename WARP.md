@@ -13,8 +13,7 @@ Breakers.jl is a Julia package that provides multiple methods for dividing numer
 - **Algorithm Files**: Each binning method has its own implementation file:
   - `equal_breaks.jl`: Equal interval breaks
   - `quantile_breaks.jl`: Quantile-based breaks  
-  - `fisher_breaks.jl`: Fisher-Jenks natural breaks (single-threaded)
-  - `fisher_breaks_threaded.jl`: Multi-threaded Fisher-Jenks implementation
+  - `fisher_breaks.jl`: Fisher-Jenks natural breaks
   - `kmeans_breaks.jl`: K-means clustering breaks
   - `fixed_breaks.jl`: User-specified fixed breaks
 - **Core Functions**:
@@ -26,7 +25,6 @@ Breakers.jl is a Julia package that provides multiple methods for dividing numer
 ### Key Design Patterns
 - **Multi-method dispatch**: All algorithms follow the pattern `method_breaks(x::Vector{<:Real}, n::Integer)`
 - **R Compatibility**: Exact boundary handling matching R's classInt package behavior
-- **Performance optimization**: Threaded implementations for computationally intensive algorithms
 - **Missing value handling**: All functions properly handle `Vector{Union{Real, Missing}}`
 
 ## Development Commands
@@ -51,8 +49,6 @@ julia --project=. -e 'using Pkg; Pkg.test()'
 # Run specific test file
 julia --project=. test/test_get_bins.jl
 
-# Run tests with threading (for threaded algorithm tests)
-julia --project=. -t auto test/test_threaded_fisher.jl
 ```
 
 ### Benchmarking
@@ -63,11 +59,6 @@ julia benchmark.jl
 # Custom benchmark parameters
 julia benchmark.jl --sizes=1000,10000 --methods=fisher,kmeans --bins=5
 
-# Run threaded benchmarks
-julia -t auto benchmark.jl --methods=fisher,fisher_threaded
-
-# Run specific algorithm examples
-julia --project=. benchmark_example.jl
 
 # For R classInt comparison (requires RCall.jl)
 julia --project=. examples/r_classint_comparison.jl
@@ -86,8 +77,8 @@ open docs/build/index.html
 ## Algorithm Implementation Notes
 
 ### Fisher-Jenks Natural Breaks
-- Two implementations: single-threaded (`fisher_breaks.jl`) and multi-threaded (`fisher_breaks_threaded.jl`)
-- Both use dynamic programming with exact optimization (globally optimal solution)
+- `fisher_breaks.jl` wraps `fisher_clustering.jl`, which uses dynamic programming with exact optimization (globally optimal solution)
+- Divide and conquer over monotone split points gives O(k × n × log n) time
 - Fully general algorithms - no hardcoded dataset-specific optimizations
 - For dataset-specific optimization, use `fixed_breaks()` with known optimal break points
 
@@ -97,17 +88,13 @@ open docs/build/index.html
 - **Extreme outliers**: Values far beyond breaks may get assigned to bin n+1
 - **Break point precision**: Must match R's floating point precision for identical results
 
-### Threading Considerations
-- Use `julia -t auto` or `julia -t N` to enable threading for `fisher_breaks_threaded`
-- Threaded algorithms are most beneficial for datasets >10,000 observations
-- Thread-safe implementations use local reduction variables
-
 ## Testing Strategy
 
 ### Unit Tests
 - `test_get_bins.jl`: Core functionality and boundary handling
 - `test_subarrays.jl`: SubArray compatibility  
-- `test_threaded_fisher.jl`: Multi-threaded algorithm validation
+- `test_fixed_breaks.jl`: Fixed break points
+- `test_bin_ref.jl`: Comparison with R classInt results in `bin_ref.csv`
 
 ### R Compatibility Testing
 - Boundary value tests ensure exact R classInt behavior

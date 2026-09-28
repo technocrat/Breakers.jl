@@ -11,8 +11,7 @@ Calculate breaks using quantiles.
 - `Vector{Float64}`: Vector of break points (including min and max values)
 
 # Note
-- For perfect compatibility with R's ClassInt, some edge cases may require
-  manual handling. See test/compare_to_classInt_R.jl for examples.
+- Matches R's `classIntervals(x, k, style = "quantile")`; see test/test_bin_ref.jl.
 """
 function quantile_breaks(x::Vector{<:Real}, k::Int)
     # Calculate quantiles

@@ -8,6 +8,7 @@ This module provides functions for creating class intervals for mapping or visua
 """
 
 using Clustering
+using PrecompileTools
 using StatsBase
 using Statistics
 
@@ -18,7 +19,6 @@ include("fixed_breaks.jl")
 include("kmeans_breaks.jl")
 include("fisher_clustering.jl")
 include("fisher_breaks.jl")
-include("fisher_breaks_threaded.jl")
 include("quantile_breaks.jl")
 include("get_breaks_raw.jl")    
 
@@ -115,7 +115,7 @@ function get_bin_indices(x::Vector{T}, n::Int=7) where T<:Union{Real, Missing}
                     # For extreme outliers (like LA County)
                     # NOTE: This implementation doesn't fully match R's behavior for extreme outliers
                     # like LA County's population (9,936,690). For such cases, you might need special
-                    # handling in your application. See test/compare_to_classInt_R.jl for an example.
+                    # handling in your application.
                     if value > extreme_threshold
                         indices[i] = length(breaks)  # Beyond the theoretical maximum bin
                     end
@@ -234,8 +234,30 @@ function get_bins_fixed(x::Vector{T}, break_points::Vector{<:Real}) where T<:Uni
     return cut_data(x, breaks)
 end
 
+# Compile the common call paths during precompilation so the first call in a
+# new session does not pay the compilation cost
+@setup_workload begin
+    x_float = collect(range(1.0, 100.0; length=50)) .^ 1.5
+    x_int = round.(Int, x_float)
+    x_missing = Union{Missing, Float64}[x_float; missing]
+    @compile_workload begin
+        for x in (x_float, x_int)
+            get_bins(x, 5)
+            get_bin_indices(x, 5)
+            get_bins_fixed(x, [10, 100])
+            get_bin_indices_fixed(x, [10, 100])
+            fisher_breaks(x, 5)
+            kmeans_breaks(x, 5)
+            quantile_breaks(x, 5)
+            equal_breaks(x, 5)
+        end
+        get_bins(x_missing, 5)
+        get_bin_indices(x_missing, 5)
+    end
+end
+
 export get_breaks, cut_data, equal_breaks, fixed_breaks, split_at_indices,
-       kmeans_breaks, fisher_clustering, fisher_breaks, fisher_breaks_threaded,
+       kmeans_breaks, fisher_clustering, fisher_breaks,
        quantile_breaks, get_bins, get_bin_indices, get_bin_indices_fixed, get_bins_fixed,
        get_breaks_raw
 

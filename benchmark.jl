@@ -5,11 +5,10 @@
 #
 # Usage:
 #   julia benchmark.jl [options]
-#   julia -t auto benchmark.jl [options]  # For threading benchmarks
 #
 # Options:
 #   --sizes=size1,size2,...       Dataset sizes to benchmark (default: 1000,10000,100000)
-#   --methods=method1,method2,... Binning methods to benchmark (default: fisher,fisher_threaded,kmeans,quantile,equal)
+#   --methods=method1,method2,... Binning methods to benchmark (default: fisher,kmeans,quantile,equal)
 #   --distributions=dist1,dist2,..Data distributions to benchmark (default: normal,uniform,skewed)
 #   --bins=n                      Number of bins to use (default: 7)
 #   --help, -h                    Show this help message
@@ -70,7 +69,7 @@ function run_breakers_benchmark()
     
     # Parse arguments or use defaults
     sizes = parse_arg("--sizes", [1000, 10000, 100000])
-    methods = parse_arg("--methods", [:fisher, :fisher_threaded, :kmeans, :quantile, :equal])
+    methods = parse_arg("--methods", [:fisher, :kmeans, :quantile, :equal])
     distributions = parse_arg("--distributions", [:normal, :uniform, :skewed])
     bins = parse_arg("--bins", 7)
     
@@ -93,11 +92,6 @@ function run_breakers_benchmark()
             data = generate_test_data(size, dist)
             
             for method in methods
-                if method == :fisher_threaded && Threads.nthreads() == 1
-                    @warn "Skipping fisher_threaded - no threads available. Run with `julia -t auto` for threading."
-                    continue
-                end
-                
                 try
                     # Run benchmark
                     benchmark_result = @benchmark $(get_method_function(method))($(data), $(bins))
@@ -178,8 +172,6 @@ end
 function get_method_function(method)
     if method == :fisher
         return fisher_breaks
-    elseif method == :fisher_threaded
-        return fisher_breaks_threaded
     elseif method == :kmeans
         return kmeans_breaks
     elseif method == :quantile
@@ -209,21 +201,7 @@ function print_benchmark_summary(results)
         end
         println()
     end
-    
-    if Threads.nthreads() > 1
-        fisher_results = filter(row -> row.Method == "fisher", results)
-        fisher_threaded_results = filter(row -> row.Method == "fisher_threaded", results)
-        
-        if !isempty(fisher_results) && !isempty(fisher_threaded_results)
-            println("🚀 THREADING PERFORMANCE:")
-            for size in intersect(fisher_results.Size, fisher_threaded_results.Size)
-                regular_time = mean(filter(row -> row.Size == size, fisher_results).MedianTime_ms)
-                threaded_time = mean(filter(row -> row.Size == size, fisher_threaded_results).MedianTime_ms)
-                speedup = regular_time / threaded_time
-                @printf "  Size %-8d: %.2fx speedup with %d threads\n" size speedup Threads.nthreads()
-            end
-        end
-    end
+
 end
 
 # Run the script

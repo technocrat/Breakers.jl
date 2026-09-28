@@ -150,41 +150,6 @@ function test_fisher_variants()
 end
 
 """
-Compare with threaded implementation
-"""
-function compare_threaded_performance()
-    println("\n🧵 THREADED vs STANDARD FISHER COMPARISON")
-    println("==========================================\n")
-    
-    sizes = [1000, 5000, 10000]
-    k = 7
-    
-    println("Size\tStandard (ms)\tThreaded (ms)\tSpeedup")
-    println("----\t-------------\t-------------\t-------")
-    
-    for size in sizes
-        data = randn(size) .* 100 .+ 500
-        
-        # Time standard implementation
-        standard_time = @elapsed fisher_breaks(data, k) * 1000
-        
-        # Time threaded implementation
-        threaded_time = @elapsed fisher_breaks_threaded(data, k) * 1000
-        
-        speedup = standard_time / threaded_time
-        
-        @printf("%d\t%.2f\t\t%.2f\t\t%.2fx\n", size, standard_time, threaded_time, speedup)
-    end
-    
-    println("\n🔧 Threading info:")
-    println("Available threads: ", Threads.nthreads())
-    if Threads.nthreads() == 1
-        println("⚠️  Running on single thread - start Julia with more threads for better performance:")
-        println("   julia --threads=auto")
-    end
-end
-
-"""
 Estimate the R vs Julia performance difference reasons
 """
 function estimate_performance_gap_reasons()
@@ -255,7 +220,6 @@ function main()
     analyze_memory_usage()
     analyze_algorithmic_differences()
     test_fisher_variants()
-    compare_threaded_performance()
     estimate_performance_gap_reasons()
     
     println("\n" * "="^60)
@@ -272,7 +236,6 @@ function main()
     println("   • Tertiary: Memory & low-level optimizations (~15x)")
     
     println("\n3. 💡 Immediate Solutions:")
-    println("   • ✅ Use threaded implementation: $(Threads.nthreads()) threads available")
     println("   • ✅ Limit to <5,000 data points for practical use")
     println("   • ✅ Consider data sampling for larger datasets")
     

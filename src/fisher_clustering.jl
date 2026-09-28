@@ -12,44 +12,39 @@ A tuple containing:
 - `cluster_info`: Array of cluster information (min, max, mean, std) with dimensions (k, 4)
 - `work`: Matrix of within-cluster sums of squares
 - `iwork`: Matrix of optimal splitting points
+
+# Details
+`work[i, j]` is the smallest total within-cluster sum of squares for splitting
+`x[1:i]` into `j` clusters, and `iwork[i, j]` is where the last of those
+clusters starts. The optimal start moves monotonically with `i`, so each
+column is filled by divide and conquer in O(m log m) time, giving
+O(k × m × log m) overall instead of O(k × m²).
 """
 function fisher_clustering(x::Vector{<:Real}, k::Integer)
-    s = sort(x)
     m = length(x)
-    
+
     # Initialize work matrices
     work = fill(floatmax(Float64), m, k)
     iwork = fill(1, m, k)
-    
-    # Compute work and iwork iteratively
+
+    # Prefix sums of the centred values give any cluster's sum of squares in
+    # constant time; centring limits floating-point cancellation
+    mu = sum(x) / m
+    s1 = zeros(Float64, m + 1)
+    s2 = zeros(Float64, m + 1)
     for i in 1:m
-        ss = 0.0
-        s = 0.0
-        local variance_val = 0.0  # Declare this outside inner loop but within outer loop
-        
-        for ii in 1:i
-            iii = i - ii + 1
-            ss += x[iii]^2
-            s += x[iii]
-            sn = ii
-            variance_val = ss - s^2/sn  # Update it here
-            
-            ik = iii - 1
-            if ik != 0
-                for j in 2:k
-                    if work[i, j] >= variance_val + work[ik, j-1]
-                        iwork[i, j] = iii
-                        work[i, j] = variance_val + work[ik, j-1]
-                    end
-                end
-            end
-        end
-        
-        # This uses the final value of variance_val from the inner loop
-        work[i, 1] = variance_val
-        iwork[i, 1] = 1
+        d = x[i] - mu
+        s1[i+1] = s1[i] + d
+        s2[i+1] = s2[i] + d^2
     end
-    
+
+    for i in 1:m
+        work[i, 1] = _cluster_ss(s1, s2, 1, i)
+    end
+    for j in 2:k
+        _fisher_column!(work, iwork, s1, s2, j, j, m, j, m)
+    end
+
     # Extract results
     cluster_info = zeros(Float64, k, 4)  # Each row: [min, max, mean, std]
     
@@ -86,4 +81,31 @@ function fisher_clustering(x::Vector{<:Real}, k::Integer)
     end
     
     return cluster_info, work, iwork
+end
+
+# Within-cluster sum of squares of x[a:b], from prefix sums of centred values
+@inline function _cluster_ss(s1, s2, a, b)
+    n = b - a + 1
+    t = s1[b+1] - s1[a]
+    return s2[b+1] - s2[a] - t^2 / n
+end
+
+# Fill work[lo:hi, j] and iwork[lo:hi, j], given that the optimal start of the
+# last cluster lies in optlo:opthi. Ties go to the earliest start
+function _fisher_column!(work, iwork, s1, s2, j, lo, hi, optlo, opthi)
+    lo > hi && return
+    mid = (lo + hi) >>> 1
+    best = floatmax(Float64)
+    best_start = optlo
+    for st in optlo:min(mid, opthi)
+        v = work[st-1, j-1] + _cluster_ss(s1, s2, st, mid)
+        if v < best
+            best = v
+            best_start = st
+        end
+    end
+    work[mid, j] = best
+    iwork[mid, j] = best_start
+    _fisher_column!(work, iwork, s1, s2, j, lo, mid - 1, optlo, best_start)
+    _fisher_column!(work, iwork, s1, s2, j, mid + 1, hi, best_start, opthi)
 end

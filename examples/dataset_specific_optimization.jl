@@ -106,8 +106,6 @@ function smart_breaks(x::Vector{<:Real}, k::Int; method::Symbol=:fisher)
         @info "Using general algorithm: $method"
         if method == :fisher
             return fisher_breaks(x, k)
-        elseif method == :fisher_threaded
-            return fisher_breaks_threaded(x, k)
         elseif method == :kmeans
             return kmeans_breaks(x, k)
         elseif method == :quantile
