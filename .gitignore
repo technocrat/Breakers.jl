@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Documentation build output
+docs/build/
+docs/build.zip
+
+# Local tool state
+.serena/
