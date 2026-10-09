@@ -916,13 +916,20 @@ li p { margin-bottom: 0.25rem; }
   margin: 1rem 0;
 }
 .md-output { margin: 0.5rem 0; }
-.md-output-text pre {
+.md-output-text {
   background: var(--md-sys-color-surface-container);
   border-radius: var(--md-sys-shape-corner-medium);
   padding: 1rem;
   font-family: var(--md-sys-typescale-body-large-code-font);
   font-size: 0.8125rem;
+  overflow-x: auto;
 }
+.md-output-text code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+}
+.md-output-html { overflow-x: auto; }
 
 /* ── Julia value output ── */
 .md-julia-value {
