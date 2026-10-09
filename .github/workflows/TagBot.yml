@@ -10,7 +10,7 @@ on:
         default: "3"
 
 permissions:
-  actions: read
+  actions: write
   checks: read
   contents: write
   deployments: read
@@ -31,6 +31,12 @@ jobs:
       - uses: JuliaRegistries/TagBot@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Pushing the tag with a deploy key (not the workflow token) lets
-          # the tag trigger the Documentation workflow, which builds stable docs
           ssh: ${{ secrets.DOCUMENTER_KEY }}
+      # A tag pushed with the workflow token does not trigger the
+      # Documentation workflow, so dispatch it on the newest release tag
+      - name: Build docs for the release tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(gh api "repos/${{ github.repository }}/releases/latest" --jq .tag_name)
+          gh workflow run documentation.yml --repo "${{ github.repository }}" --ref "$tag"

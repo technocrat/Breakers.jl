@@ -6,6 +6,9 @@ on:
       - main
     tags: '*'
   pull_request:
+  # Run against a tag ref to build stable docs; TagBot dispatches this
+  # because tags pushed with the workflow token do not trigger workflows
+  workflow_dispatch:
 
 # Documenter pushes the built site to the gh-pages branch and reports
 # preview status on pull requests
