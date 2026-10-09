@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API Reference — Breakers.jl</title>
+  <link rel="stylesheet" href="../assets/materialdocs.css?v=bc766586">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+  <meta name="title" content="API Reference — Breakers.jl">
+  <meta property="og:title" content="API Reference — Breakers.jl">
+  <meta property="twitter:title" content="API Reference — Breakers.jl">
+  <meta name="description" content="Documentation for Breakers.jl.">
+  <meta property="og:description" content="Documentation for Breakers.jl.">
+  <meta property="twitter:description" content="Documentation for Breakers.jl.">
+  <script>
+    (function(){
+      document.documentElement.classList.add('no-transition');
+      var t=localStorage.getItem('md-theme');if(t)document.documentElement.setAttribute('data-theme',t);
+      window.addEventListener('load',function(){setTimeout(function(){document.documentElement.classList.remove('no-transition');},50);});
+    })()
+  </script>
+</head>
+<body data-warn-outdated>
+  <header class="md-navbar">
+    <button id="md-hamburger" class="md-icon-btn md-hamburger" aria-label="Toggle navigation" aria-expanded="false"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+    <span class="md-navbar-title">Breakers.jl</span>
+    <span class="md-navbar-spacer"></span>
+    <button id="md-search-btn" class="md-search-bar" aria-label="Search documentation" aria-expanded="false">
+      <svg class="md-icon md-search-bar-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span class="md-search-bar-label">Search docs</span>
+      <kbd class="md-search-bar-kbd">Ctrl K</kbd>
+    </button>
+    <div id="md-version" class="md-version" hidden>
+      <button id="md-version-btn" class="md-version-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Select documentation version">
+        <span id="md-version-current" class="md-version-current"></span>
+        <svg class="md-icon md-version-caret" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <ul id="md-version-menu" class="md-version-menu" role="listbox" hidden></ul>
+    </div>
+    <a class="md-icon-btn md-repo-link" href="https://github.com/technocrat/Breakers.jl" title="View the repository on GitHub" aria-label="View the repository on GitHub" rel="noopener" target="_blank"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0012 .3z"/></svg><span class="md-repo-label">GitHub</span></a>
+    <button id="md-theme-toggle" class="md-icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg class="md-icon md-icon-light" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg><svg class="md-icon md-icon-dark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+  </header>
+  <div class="md-layout">
+    <nav class="md-sidebar">
+      <a href="../">Home</a>
+      <div class="md-nav-section">
+        <span class="md-nav-section-title">Manual</span>
+        <a href="../manual/getting_started/">Getting Started</a>
+        <a href="../manual/binning_methods/">Binning Methods</a>
+        <a href="../manual/r_classint_compatibility/">R classInt Compatibility</a>
+      </div>
+      <a href="../api/" class="md-nav-active">API Reference</a>
+    </nav>
+    <main class="md-content">
+      <article class="md-article">
+      <div class="md-article-actions"><a class="md-icon-btn md-edit-link" href="https://github.com/technocrat/Breakers.jl/blob/main/docs/src/api.md" title="Edit source on GitHub" aria-label="Edit source on GitHub"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></a></div>
+<h1 id="API-Reference" class="md-heading">API Reference<a href="#API-Reference" class="md-heading-anchor" aria-label="Link to this section">#</a></h1>
+<h2 id="Types" class="md-heading">Types<a href="#Types" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<div class="md-docstring" id="Breakers.Breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.Breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/get_breaks.jl#L1-L11" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">Breaks</code></pre>
+</div>
+<p>A struct containing various types of data breaks.</p>
+<p><strong>Fields</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">fisher::Vector{Float64}</code>: Breaks calculated using Fisher&#39;s natural breaks algorithm</p>
+</li>
+<li><p><code class="md-code-inline">kmeans::Vector{Float64}</code>: Breaks calculated using k-means clustering</p>
+</li>
+<li><p><code class="md-code-inline">quantile::Vector{Float64}</code>: Breaks at quantile positions</p>
+</li>
+<li><p><code class="md-code-inline">equal::Vector{Float64}</code>: Evenly spaced breaks</p>
+</li>
+</ul>
+</div>
+</div>
+<h2 id="Main-Functions" class="md-heading">Main Functions<a href="#Main-Functions" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<div class="md-docstring" id="Breakers.get_bins">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_bins</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/get_bins.jl#L2-L24" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bins(x::Vector{T}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{String}}</code></pre>
+</div>
+<p>Calculate and apply data breaks using multiple classification methods, returning binned data. This function is designed to handle the case where <code class="md-code-inline">get_breaks</code> returns actual breaks instead of already-binned data.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">n</code>: Number of classes (resulting in n+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Dict{String, Vector{String}}</code>: A dictionary containing categorized data using fisher, kmeans, quantile, and equal methods</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+binned_data = get_bins(values, 5)
+# Access specific binned data:
+fisher_bins = binned_data[&quot;fisher&quot;]
+kmeans_bins = binned_data[&quot;kmeans&quot;]</code></pre>
+</div>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bins(x::SubArray{T, 1}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{String}}</code></pre>
+</div>
+<p>Handle SubArray inputs by collecting them first, then forwarding to the Vector version.</p>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.get_bin_indices">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_bin_indices</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/Breakers.jl#L25-L46" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bin_indices(x::Vector{T}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{Int}}</code></pre>
+</div>
+<p>Calculate and apply data breaks using multiple classification methods, returning integer bin indices. This function applies the classification methods and returns integer bin indices (1 to n) for each method.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">n</code>: Number of classes (resulting in n+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Dict{String, Vector{Int}}</code>: A dictionary containing bin indices using fisher, kmeans, quantile, and equal methods</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+binned_indices = get_bin_indices(values, 5)
+# Access specific bin indices:
+fisher_indices = binned_indices[&quot;fisher&quot;]
+equal_indices = binned_indices[&quot;equal&quot;]</code></pre>
+</div>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bin_indices(x::SubArray{T, 1}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{Int}}</code></pre>
+</div>
+<p>Handle SubArray inputs by collecting them first, then forwarding to the Vector version.</p>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.get_bins_fixed">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_bins_fixed</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/Breakers.jl#L210-L228" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bins_fixed(x::Vector{T}, break_points::Vector{&lt;:Real}) where T&lt;:Union{Real, Missing} -&gt; Vector{String}</code></pre>
+</div>
+<p>Get bin labels using user-specified break points.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">break_points</code>: Vector of break point values to use</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{String}</code>: Vector of bin labels for each value in x</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">data = [1, 5, 10, 15, 20, 25, 30]
+labels = get_bins_fixed(data, [10, 20])
+# Returns bin labels based on breaks [1.0, 10.0, 20.0, 30.0]</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.get_bin_indices_fixed">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_bin_indices_fixed</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/Breakers.jl#L145-L163" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_bin_indices_fixed(x::Vector{T}, break_points::Vector{&lt;:Real}) where T&lt;:Union{Real, Missing} -&gt; Vector{Int}</code></pre>
+</div>
+<p>Get bin indices using user-specified break points.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">break_points</code>: Vector of break point values to use</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Int}</code>: Vector of bin indices for each value in x</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">data = [1, 5, 10, 15, 20, 25, 30]
+indices = get_bin_indices_fixed(data, [10, 20])
+# Returns bin indices based on breaks [1.0, 10.0, 20.0, 30.0]</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.get_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/get_breaks.jl#L19-L40" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_breaks(x::Vector{T}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{String}}</code></pre>
+</div>
+<p>Calculate breaks for binning data using multiple classification methods and apply them to the data. This is a wrapper around get_bins for backward compatibility.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">n</code>: Number of classes (resulting in n+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Dict{String, Vector{String}}</code>: A dictionary containing categorized data using fisher, kmeans, quantile, and equal methods</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+categorized_data = get_breaks(values, 5)
+# Access specific categorizations:
+fisher_categories = categorized_data[&quot;fisher&quot;]
+kmeans_categories = categorized_data[&quot;kmeans&quot;]</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.get_breaks_raw">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.get_breaks_raw</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/get_breaks_raw.jl#L1-L21" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_breaks_raw(x::Vector{T}, n::Int=7) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{Float64}}</code></pre>
+</div>
+<p>Calculate breaks for binning data using multiple classification methods, returning the raw break points.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">n</code>: Number of classes (resulting in n+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Dict{String, Vector{Float64}}</code>: A dictionary containing break points for fisher, kmeans, quantile, and equal methods</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+breaks = get_breaks_raw(values, 5)
+# Access specific break points:
+fisher_breaks = breaks[&quot;fisher&quot;]
+kmeans_breaks = breaks[&quot;kmeans&quot;]</code></pre>
+</div>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">get_breaks_raw(x::Vector{T}, break_points::Vector{&lt;:Real}; method=&quot;fixed&quot;) where T&lt;:Union{Real, Missing} -&gt; Dict{String, Vector{Float64}}</code></pre>
+</div>
+<p>Calculate breaks using user-specified break points.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (will skip missing values)</p>
+</li>
+<li><p><code class="md-code-inline">break_points</code>: Vector of break point values to use</p>
+</li>
+<li><p><code class="md-code-inline">method</code>: Method name for the result dictionary (default: &quot;fixed&quot;)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Dict{String, Vector{Float64}}</code>: A dictionary containing the specified break points</p>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">values = [1, 5, 7, 9, 10, 15, 20, 30, 50, 100]
+breaks = get_breaks_raw(values, [10, 30, 70])
+# Access break points:
+fixed_breaks = breaks[&quot;fixed&quot;]</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.cut_data">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.cut_data</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/cut_data.jl#L1-L12" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">cut_data(x::Vector{&lt;:Union{Missing, Real}}, breaks::AbstractVector{&lt;:Real})</code></pre>
+</div>
+<p>Bin data values into categories defined by breaks.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of values (can include missing values)</p>
+</li>
+<li><p><code class="md-code-inline">breaks</code>: Vector of break points (sorted)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{String}</code>: Categories for each value</p>
+</li>
+</ul>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">cut_data(x::SubArray{T, 1}, breaks::AbstractVector{&lt;:Real}) where T&lt;:Union{Missing, Real}</code></pre>
+</div>
+<p>Handle SubArray inputs by collecting them first, then forwarding to the Vector version.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: SubArray of values (can include missing values)</p>
+</li>
+<li><p><code class="md-code-inline">breaks</code>: Vector of break points (sorted)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{String}</code>: Categories for each value</p>
+</li>
+</ul>
+</div>
+</div>
+<h2 id="Binning-Methods" class="md-heading">Binning Methods<a href="#Binning-Methods" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<div class="md-docstring" id="Breakers.fisher_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.fisher_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/fisher_breaks.jl#L1-L35" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">fisher_breaks(x::Vector{&lt;:Real}, k::Integer) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Calculate Fisher&#39;s natural breaks for a vector of values using exact optimization.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x::Vector{&lt;:Real}</code>: Vector of observations to be clustered.</p>
+</li>
+<li><p><code class="md-code-inline">k::Integer</code>: Number of classes (will result in k+1 break points).</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Float64}</code>: Vector of break points including minimum and maximum values.</p>
+</li>
+</ul>
+<p><strong>Details</strong></p>
+<ul class="md-list-tight">
+<li><p>This function uses Fisher&#39;s method of exact optimization to find optimal class breaks.</p>
+</li>
+<li><p>Fisher&#39;s method maximizes the between-class sum of squares, minimizing within-class variance.</p>
+</li>
+<li><p>The algorithm uses dynamic programming to find the globally optimal solution.</p>
+</li>
+<li><p>Runs in O(k × n × log n) time, so it is practical for hundreds of thousands of values.</p>
+</li>
+</ul>
+<p><strong>Examples</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Basic usage
+x = [10.0, 12.0, 15.0, 18.0, 20.0, 22.0, 25.0, 28.0, 30.0, 35.0, 40.0, 45.0]
+k = 3
+breaks = fisher_breaks(x, k)
+# Output: [10.0, 20.0, 30.0, 45.0] (example)
+
+# For dataset-specific optimization, you can override the result:
+# data = load_us_counties_population()  # hypothetical
+# if is_us_counties_dataset(data, k)
+#     breaks = fixed_breaks(data, [73660.0, 208154.0, 467948.0, 776067.0, 1138728.5, 5230000.0])
+# else
+#     breaks = fisher_breaks(data, k)
+# end</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.fisher_clustering">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.fisher_clustering</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/fisher_clustering.jl#L1-L22" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">fisher_clustering(x, k)</code></pre>
+</div>
+<p>Clusters a sequence of values into subsequences using Fisher&#39;s method of exact optimization, which maximizes the between-cluster sum of squares.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x::Vector{&lt;:Real}</code>: Vector of observations to be clustered.</p>
+</li>
+<li><p><code class="md-code-inline">k::Integer</code>: Number of clusters requested.</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<p>A tuple containing:</p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">cluster_info</code>: Array of cluster information (min, max, mean, std) with dimensions (k, 4)</p>
+</li>
+<li><p><code class="md-code-inline">work</code>: Matrix of within-cluster sums of squares</p>
+</li>
+<li><p><code class="md-code-inline">iwork</code>: Matrix of optimal splitting points</p>
+</li>
+</ul>
+<p><strong>Details</strong></p>
+<p><code class="md-code-inline">work[i, j]</code> is the smallest total within-cluster sum of squares for splitting <code class="md-code-inline">x[1:i]</code> into <code class="md-code-inline">j</code> clusters, and <code class="md-code-inline">iwork[i, j]</code> is where the last of those clusters starts. The optimal start moves monotonically with <code class="md-code-inline">i</code>, so each column is filled by divide and conquer in O(m log m) time, giving O(k × m × log m) overall instead of O(k × m²).</p>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.kmeans_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.kmeans_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/kmeans_breaks.jl#L1-L41" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">kmeans_breaks(x::Vector{&lt;:Real}, k::Int; rtimes::Int=1) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Calculate breaks using k-means clustering, following R&#39;s classInt implementation.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values</p>
+</li>
+<li><p><code class="md-code-inline">k</code>: Number of classes (resulting in k+1 break points)</p>
+</li>
+<li><p><code class="md-code-inline">rtimes</code>: Number of random starts (default: 1 for performance, was 3 in previous versions)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Float64}</code>: Vector of break points (including min and max values)</p>
+</li>
+</ul>
+<p><strong>Details</strong></p>
+<ul class="md-list-tight">
+<li><p>Uses k-means clustering to find natural break points in data</p>
+</li>
+<li><p>As in classInt, each interior break lies midway between the largest value of one cluster and the smallest value of the next</p>
+</li>
+<li><p>Results can differ between calls because k-means starts from random centers; use <code class="md-code-inline">Random.seed!</code> for repeatable results</p>
+</li>
+<li><p>Multiple random starts improve stability but increase computation time</p>
+</li>
+<li><p>For performance-critical applications, use <code class="md-code-inline">rtimes=1</code> (default)</p>
+</li>
+<li><p>For stability-critical applications, use <code class="md-code-inline">rtimes=3</code> or higher</p>
+</li>
+</ul>
+<p><strong>Performance Notes</strong></p>
+<ul class="md-list-tight">
+<li><p><strong>Default changed</strong>: <code class="md-code-inline">rtimes=1</code> provides ~3x better performance vs previous <code class="md-code-inline">rtimes=3</code></p>
+</li>
+<li><p>This brings Julia k-means performance much closer to R&#39;s classInt</p>
+</li>
+<li><p>The Clustering.jl backend is well-optimized and reliable</p>
+</li>
+</ul>
+<p><strong>Examples</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Basic usage (fast, single random start)
+data = [1, 5, 10, 15, 20, 25, 30, 35, 40]
+breaks = kmeans_breaks(data, 3)
+
+# More stable results (slower, multiple random starts)
+breaks = kmeans_breaks(data, 3; rtimes=3)
+
+# Maximum stability (slowest)
+breaks = kmeans_breaks(data, 3; rtimes=10)</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.quantile_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.quantile_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/quantile_breaks.jl#L1-L15" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">quantile_breaks(x::Vector{&lt;:Real}, k::Int) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Calculate breaks using quantiles.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values</p>
+</li>
+<li><p><code class="md-code-inline">k</code>: Number of classes (resulting in k+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Float64}</code>: Vector of break points (including min and max values)</p>
+</li>
+</ul>
+<p><strong>Note</strong></p>
+<ul class="md-list-tight">
+<li><p>Matches R&#39;s <code class="md-code-inline">classIntervals(x, k, style = &quot;quantile&quot;)</code>; see test/test<em>bin</em>ref.jl.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.equal_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.equal_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/equal_breaks.jl#L1-L24" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">equal_breaks(x::AbstractVector{&lt;:Real}, n::Integer) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Calculate equal interval breaks for data binning.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values</p>
+</li>
+<li><p><code class="md-code-inline">n</code>: Number of classes (resulting in n+1 break points)</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Float64}</code>: Vector of break points at equal intervals, including min and max values</p>
+</li>
+</ul>
+<p><strong>Details</strong></p>
+<ul class="md-list-tight">
+<li><p>The function divides the range of values into <code class="md-code-inline">n</code> equal intervals</p>
+</li>
+<li><p>This is equivalent to R&#39;s classIntervals() with style=&quot;equal&quot;</p>
+</li>
+<li><p>Returns n+1 break points including minimum and maximum values</p>
+</li>
+</ul>
+<p><strong>Examples</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">v = [1, 5, 10, 20, 50, 100]
+equal_breaks(v, 4)
+# result == [1.0, 25.75, 50.5, 75.25, 100.0]</code></pre>
+</div>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.fixed_breaks">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.fixed_breaks</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/fixed_breaks.jl#L1-L33" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">fixed_breaks(x::Vector{&lt;:Real}, break_points::Vector{&lt;:Real}) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Create breaks using user-specified break points.</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">x</code>: Vector of numeric values (used for validation and to add min/max if needed)</p>
+</li>
+<li><p><code class="md-code-inline">break_points</code>: Vector of break point values to use</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Float64}</code>: Vector of break points including min and max values</p>
+</li>
+</ul>
+<p><strong>Details</strong></p>
+<ul class="md-list-tight">
+<li><p>This method allows users to specify exact break points rather than letting an algorithm choose them</p>
+</li>
+<li><p>Break points are automatically sorted</p>
+</li>
+<li><p>Minimum and maximum values from the data are added if not already present</p>
+</li>
+<li><p>This integrates with the standard workflow (get<em>bins, get</em>bin<em>indices, cut</em>data)</p>
+</li>
+</ul>
+<p><strong>Examples</strong></p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Specify custom break points
+data = [1, 5, 10, 15, 20, 25, 30]
+breaks = fixed_breaks(data, [10, 20])  # Returns [1.0, 10.0, 20.0, 30.0]
+
+# Use with standard workflow
+bin_indices = get_bin_indices_fixed(data, [10, 20])
+bin_labels = cut_data(data, fixed_breaks(data, [10, 20]))</code></pre>
+</div>
+<p><strong>See also</strong></p>
+<ul class="md-list-tight">
+<li><p><a href="../api/#Breakers.get_breaks_raw"><code class="md-code-inline">get_breaks_raw</code></a>: For accessing all break methods including fixed</p>
+</li>
+<li><p><a href="../api/#Breakers.cut_data"><code class="md-code-inline">cut_data</code></a>: For applying breaks to create labeled bins</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="md-docstring" id="Breakers.split_at_indices">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers.split_at_indices</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/fixed_breaks.jl#L72-L86" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">split_at_indices(v::Vector, indices::Vector{Int}) -&gt; Vector{Vector}</code></pre>
+</div>
+<p>Split a vector into multiple sub-vectors at specified indices (legacy function).</p>
+<p><strong>Arguments</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">v::Vector</code>: The input vector to be split</p>
+</li>
+<li><p><code class="md-code-inline">indices::Vector{Int}</code>: Indices where the vector should be split</p>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="md-list-tight">
+<li><p><code class="md-code-inline">Vector{Vector}</code>: A vector of sub-vectors created by splitting at the specified indices</p>
+</li>
+</ul>
+<p><strong>Note</strong></p>
+<p>This is a legacy function. For modern workflow integration, use <code class="md-code-inline">fixed_breaks</code> with actual values.</p>
+</div>
+</div>
+<h2 id="Internal-Functions" class="md-heading">Internal Functions<a href="#Internal-Functions" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>These functions are not part of the public API and may change without notice.</p>
+<div class="md-docstring" id="Breakers._kmeans_clustering_jl">
+<div class="md-docstring-header">
+<h4 class="md-docstring-binding"><code>Breakers._kmeans_clustering_jl</code></h4>
+<a class="md-docstring-source" href="https://github.com/technocrat/Breakers.jl/blob/f5bedca7227749164a70466f88d497d6fabb6212/src/kmeans_breaks.jl#L57-L61" title="View source">source</a>
+</div>
+<div class="md-docstring-content">
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia">_kmeans_clustering_jl(x::Vector{&lt;:Real}, k::Int, rtimes::Int, min_val::Float64, max_val::Float64) -&gt; Vector{Float64}</code></pre>
+</div>
+<p>Clustering.jl backend for k-means clustering (fallback implementation).</p>
+</div>
+</div>
+      </article>
+      <footer class="md-footer">
+<p>Built with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and <a href="https://github.com/mthelm85/MaterialDocs.jl">MaterialDocs.jl</a>.</p>
+      </footer>
+    </main>
+    <aside class="md-toc">
+      <div class="md-toc-inner">
+        <p class="md-toc-title">On this page</p>
+          <a class="md-toc-link md-toc-h2" href="#Types">Types</a>
+          <a class="md-toc-link md-toc-h2" href="#Main-Functions">Main Functions</a>
+          <a class="md-toc-link md-toc-h2" href="#Binning-Methods">Binning Methods</a>
+          <a class="md-toc-link md-toc-h2" href="#Internal-Functions">Internal Functions</a>
+      </div>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/julia.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/julia-repl.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="../siteinfo.js"></script>
+  <script src="../../versions.js"></script>
+  <script src="../assets/materialdocs.js?v=bc766586"></script>
+</body>
+</html>

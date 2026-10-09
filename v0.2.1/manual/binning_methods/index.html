@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Binning Methods — Breakers.jl</title>
+  <link rel="stylesheet" href="../../assets/materialdocs.css?v=ced5c122">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+  <meta name="title" content="Binning Methods — Breakers.jl">
+  <meta property="og:title" content="Binning Methods — Breakers.jl">
+  <meta property="twitter:title" content="Binning Methods — Breakers.jl">
+  <meta name="description" content="Documentation for Breakers.jl.">
+  <meta property="og:description" content="Documentation for Breakers.jl.">
+  <meta property="twitter:description" content="Documentation for Breakers.jl.">
+  <script>
+    (function(){
+      document.documentElement.classList.add('no-transition');
+      var t=localStorage.getItem('md-theme');if(t)document.documentElement.setAttribute('data-theme',t);
+      window.addEventListener('load',function(){setTimeout(function(){document.documentElement.classList.remove('no-transition');},50);});
+    })()
+  </script>
+</head>
+<body data-warn-outdated>
+  <header class="md-navbar">
+    <button id="md-hamburger" class="md-icon-btn md-hamburger" aria-label="Toggle navigation" aria-expanded="false"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+    <span class="md-navbar-title">Breakers.jl</span>
+    <span class="md-navbar-spacer"></span>
+    <button id="md-search-btn" class="md-search-bar" aria-label="Search documentation" aria-expanded="false">
+      <svg class="md-icon md-search-bar-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span class="md-search-bar-label">Search docs</span>
+      <kbd class="md-search-bar-kbd">Ctrl K</kbd>
+    </button>
+    <div id="md-version" class="md-version" hidden>
+      <button id="md-version-btn" class="md-version-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Select documentation version">
+        <span id="md-version-current" class="md-version-current"></span>
+        <svg class="md-icon md-version-caret" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <ul id="md-version-menu" class="md-version-menu" role="listbox" hidden></ul>
+    </div>
+    <a class="md-icon-btn md-repo-link" href="https://github.com/technocrat/Breakers.jl" title="View the repository on GitHub" aria-label="View the repository on GitHub" rel="noopener" target="_blank"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0012 .3z"/></svg><span class="md-repo-label">GitHub</span></a>
+    <button id="md-theme-toggle" class="md-icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg class="md-icon md-icon-light" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg><svg class="md-icon md-icon-dark" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+  </header>
+  <div class="md-layout">
+    <nav class="md-sidebar">
+      <a href="../../">Home</a>
+      <div class="md-nav-section">
+        <span class="md-nav-section-title">Manual</span>
+        <a href="../../manual/getting_started/">Getting Started</a>
+        <a href="../../manual/binning_methods/" class="md-nav-active">Binning Methods</a>
+        <a href="../../manual/r_classint_compatibility/">R classInt Compatibility</a>
+      </div>
+      <a href="../../api/">API Reference</a>
+    </nav>
+    <main class="md-content">
+      <article class="md-article">
+      <div class="md-article-actions"><a class="md-icon-btn md-edit-link" href="https://github.com/technocrat/Breakers.jl/blob/main/docs/src/manual/binning_methods.md" title="Edit source on GitHub" aria-label="Edit source on GitHub"><svg class="md-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></a></div>
+<h1 id="Binning-Methods" class="md-heading">Binning Methods<a href="#Binning-Methods" class="md-heading-anchor" aria-label="Link to this section">#</a></h1>
+<p>Breakers.jl implements several different binning methods commonly used in spatial data analysis and visualization. Each method has different characteristics and is suitable for different types of data distributions.</p>
+<h2 id="Fisher-Jenks-Natural-Breaks" class="md-heading">Fisher-Jenks Natural Breaks<a href="#Fisher-Jenks-Natural-Breaks" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>The Fisher-Jenks algorithm (also known as Jenks Natural Breaks) is an optimization algorithm that minimizes the variance within classes while maximizing the variance between classes. It&#39;s ideal for data that clusters naturally.</p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Get Fisher breaks
+fisher_breaks = Breakers.fisher_breaks(data, 5)
+
+# Get binned data using Fisher method
+bins = get_bins(data, 5)
+fisher_bins = bins[&quot;fisher&quot;]</code></pre>
+</div>
+<p>Fisher-Jenks is particularly useful for data that forms natural clusters. It tries to find &quot;gaps&quot; in the data distribution and place break points optimally to minimize in-class variance.</p>
+<h3 id="Performance" class="md-heading">Performance<a href="#Performance" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<p>Breakers computes exact Fisher-Jenks breaks in <strong>O(k × n × log n)</strong> time. It uses the same dynamic program as the classic O(k × n²) algorithm, but finds each optimal split by divide and conquer, because the optimal split point moves monotonically. The breaks are the same as the classic algorithm&#39;s.</p>
+<div class="md-table-wrap">
+<table class="md-table">
+<thead>
+<tr>
+<th style="text-align:right">Points</th>
+<th style="text-align:right">Breakers</th>
+<th style="text-align:right">R classInt, full data</th>
+<th style="text-align:right">R classInt, default settings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">1,000</td>
+<td style="text-align:right">0.14ms</td>
+<td style="text-align:right">2.3ms</td>
+<td style="text-align:right">2.3ms</td>
+</tr>
+<tr>
+<td style="text-align:right">10,000</td>
+<td style="text-align:right">1.8ms</td>
+<td style="text-align:right">213ms</td>
+<td style="text-align:right">2.6ms (sampled)</td>
+</tr>
+<tr>
+<td style="text-align:right">50,000</td>
+<td style="text-align:right">9.7ms</td>
+<td style="text-align:right">5.4s</td>
+<td style="text-align:right">27ms (sampled)</td>
+</tr>
+<tr>
+<td style="text-align:right">200,000</td>
+<td style="text-align:right">42ms</td>
+<td style="text-align:right">80s</td>
+<td style="text-align:right">42ms (sampled)</td>
+</tr>
+<tr>
+<td style="text-align:right">1,000,000</td>
+<td style="text-align:right">234ms</td>
+<td style="text-align:right">~30 min (estimated)</td>
+<td style="text-align:right">64ms (sampled)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Times are medians for 7 classes, measured in September 2026 on an Apple M1 Max; R&#39;s full-data time at 200,000 points is for skewed data only.</p>
+<p><strong>Note on R&#39;s defaults</strong>: above 3,000 values, classInt computes Fisher breaks from a random sample of 10% of the values, capped at 3,000, unless <code class="md-code-inline">largeN</code> is raised. The breaks then differ from run to run and are not optimal: on the 3,222 US county populations in <code class="md-code-inline">test/bin_ref.csv</code>, the within-class error of the sampled breaks was a median 1.9x the optimum over 20 runs. Breakers.jl always uses the full data.</p>
+<p><strong>Memory</strong>: O(k × n), about 110MB for 1,000,000 values and 7 classes.</p>
+<h2 id="K-means-Clustering" class="md-heading">K-means Clustering<a href="#K-means-Clustering" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>K-means clustering divides the data into k groups where each observation belongs to the cluster with the nearest mean. This method works well for data that forms natural clusters.</p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Get k-means breaks (default: single random start for speed)
+kmeans_breaks = Breakers.kmeans_breaks(data, 5)
+
+# For more stable results (slower)
+kmeans_breaks = Breakers.kmeans_breaks(data, 5; rtimes=3)
+
+# Get binned data using k-means method
+bins = get_bins(data, 5)
+kmeans_bins = bins[&quot;kmeans&quot;]</code></pre>
+</div>
+<p>K-means tends to create bins with similar numbers of observations when the data is uniformly distributed but will adapt to the natural clusters in the data.</p>
+<h3 id="Performance-Optimization" class="md-heading">Performance Optimization<a href="#Performance-Optimization" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<p><strong>Default Change</strong>: The k-means implementation has been optimized by changing the default number of random starts from 3 to 1, providing a <strong>~3x performance improvement</strong>:</p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Fast (new default): rtimes=1
+breaks = kmeans_breaks(data, 5)        # ~0.5ms for 1K points
+
+# Previous behavior: rtimes=3 (more stable, slower)
+breaks = kmeans_breaks(data, 5; rtimes=3)  # ~1.5ms for 1K points</code></pre>
+</div>
+<p><strong>Performance vs R&#39;s classInt</strong>:</p>
+<ul class="md-list-tight">
+<li><p><strong>1,000 points</strong>: Julia is 1.4x slower (much improved from previous 7.8x slower)</p>
+</li>
+<li><p><strong>10,000 points</strong>: Julia is 3.6x slower</p>
+</li>
+</ul>
+<h2 id="Quantile-Breaks" class="md-heading">Quantile Breaks<a href="#Quantile-Breaks" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>Quantile binning creates classes with an equal number of observations in each bin. This is useful when you want to have a similar number of data points in each category.</p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Get quantile breaks
+quantile_breaks = Breakers.quantile_breaks(data, 5)
+
+# Get binned data using quantile method
+bins = get_bins(data, 5)
+quantile_bins = bins[&quot;quantile&quot;]</code></pre>
+</div>
+<p>Quantile breaks ensure each bin contains approximately the same number of data points, which can be useful for choropleth maps when you want each color to represent an equal proportion of the data.</p>
+<h3 id="Excellent-Performance" class="md-heading">🚀 Excellent Performance<a href="#Excellent-Performance" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<p><strong>Performance</strong>: Quantile breaks are <strong>10.5x faster than R&#39;s classInt</strong> at 1,000 points and <strong>1.5x faster</strong> at 10,000:</p>
+<ul class="md-list-tight">
+<li><p><strong>Complexity</strong>: O(n log n) - excellent scaling</p>
+</li>
+<li><p><strong>Typical performance</strong>: &lt; 1ms for most dataset sizes</p>
+</li>
+<li><p><strong>Memory efficient</strong>: No large matrices required</p>
+</li>
+</ul>
+<p><strong>When to use</strong>:</p>
+<ul class="md-list-tight">
+<li><p>✅ Large datasets (any size)</p>
+</li>
+<li><p>✅ When you need equal sample representation in each bin</p>
+</li>
+<li><p>✅ Performance-critical applications</p>
+</li>
+<li><p>✅ As a fast alternative to Fisher-Jenks for large datasets</p>
+</li>
+</ul>
+<h2 id="Equal-Interval-Breaks" class="md-heading">Equal Interval Breaks<a href="#Equal-Interval-Breaks" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>Equal interval binning divides the data range into equal-sized bins. This is straightforward and works well for uniformly distributed data.</p>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Get equal interval breaks
+equal_breaks = Breakers.equal_breaks(data, 5)
+
+# Get binned data using equal interval method
+bins = get_bins(data, 5)
+equal_bins = bins[&quot;equal&quot;]</code></pre>
+</div>
+<p>Equal interval breaks are the simplest to understand but may not represent the data well if it has a skewed distribution or outliers.</p>
+<h3 id="Fastest-Performance" class="md-heading">⚡ Fastest Performance<a href="#Fastest-Performance" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<p><strong>Performance</strong>: Equal interval breaks are <strong>3.9x faster than R&#39;s classInt</strong> at 1,000 points and <strong>2.8x faster</strong> at 10,000:</p>
+<ul class="md-list-tight">
+<li><p><strong>Complexity</strong>: O(n) - a single pass to find the minimum and maximum</p>
+</li>
+<li><p><strong>Typical performance</strong>: &lt; 0.1ms for 10,000 values</p>
+</li>
+<li><p><strong>Memory efficient</strong>: Minimal memory usage</p>
+</li>
+</ul>
+<p><strong>When to use</strong>:</p>
+<ul class="md-list-tight">
+<li><p>✅ Uniformly distributed data</p>
+</li>
+<li><p>✅ When you need interpretable, round-number breaks</p>
+</li>
+<li><p>✅ Performance-critical applications with any data size</p>
+</li>
+<li><p>✅ Real-time applications</p>
+</li>
+<li><p>✅ When simplicity and speed are priorities</p>
+</li>
+</ul>
+<h2 id="Algorithm-Selection-Guide" class="md-heading">Algorithm Selection Guide<a href="#Algorithm-Selection-Guide" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>Choose the right algorithm based on your data characteristics and performance requirements:</p>
+<h3 id="**Decision-Matrix**" class="md-heading">📊 <strong>Decision Matrix</strong><a href="#**Decision-Matrix**" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<div class="md-table-wrap">
+<table class="md-table">
+<thead>
+<tr>
+<th style="text-align:right">Your Priority</th>
+<th style="text-align:right">Recommended Algorithm</th>
+<th style="text-align:right">Why?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right"><strong>Data has natural clusters</strong></td>
+<td style="text-align:right">Fisher-Jenks or K-means</td>
+<td style="text-align:right">Optimizes for natural groupings</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>Equal representation per bin</strong></td>
+<td style="text-align:right">Quantile breaks</td>
+<td style="text-align:right">Each bin contains same number of observations</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>Interpretable round numbers</strong></td>
+<td style="text-align:right">Equal intervals</td>
+<td style="text-align:right">Easy to understand, clean boundaries</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>Maximum performance</strong></td>
+<td style="text-align:right">Equal intervals</td>
+<td style="text-align:right">2.8-3.9x faster than R</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>Large datasets (N&gt;10K)</strong></td>
+<td style="text-align:right">Quantile breaks</td>
+<td style="text-align:right">O(n log n), 1.5x faster than R at 10K</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>Real-time applications</strong></td>
+<td style="text-align:right">Equal intervals</td>
+<td style="text-align:right">Fastest possible, consistent performance</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="**Performance-Ranking**-(1K-data-points)" class="md-heading">🎯 <strong>Performance Ranking</strong> (1K data points)<a href="#**Performance-Ranking**-(1K-data-points)" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<div class="md-table-wrap">
+<table class="md-table">
+<thead>
+<tr>
+<th style="text-align:right">Rank</th>
+<th style="text-align:right">Algorithm</th>
+<th style="text-align:right">Julia Time</th>
+<th style="text-align:right">vs R Performance</th>
+<th style="text-align:right">Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">🥇 <strong>1st</strong></td>
+<td style="text-align:right">Equal intervals</td>
+<td style="text-align:right"><strong>0.010ms</strong></td>
+<td style="text-align:right"><strong>3.9x faster</strong></td>
+<td style="text-align:right">O(n)</td>
+</tr>
+<tr>
+<td style="text-align:right">🥈 <strong>2nd</strong></td>
+<td style="text-align:right">Quantile</td>
+<td style="text-align:right"><strong>0.009ms</strong></td>
+<td style="text-align:right"><strong>10.5x faster</strong></td>
+<td style="text-align:right">O(n log n)</td>
+</tr>
+<tr>
+<td style="text-align:right">🥉 <strong>3rd</strong></td>
+<td style="text-align:right">Fisher-Jenks</td>
+<td style="text-align:right"><strong>0.14ms</strong></td>
+<td style="text-align:right"><strong>17x faster</strong></td>
+<td style="text-align:right">O(k×n×log n)</td>
+</tr>
+<tr>
+<td style="text-align:right">4th</td>
+<td style="text-align:right">K-means</td>
+<td style="text-align:right"><strong>0.57ms</strong></td>
+<td style="text-align:right"><strong>1.4x slower</strong></td>
+<td style="text-align:right">O(k×n×i)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="**Scaling-Recommendations**" class="md-heading">📈 <strong>Scaling Recommendations</strong><a href="#**Scaling-Recommendations**" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<div class="md-code-block">
+<button class="md-copy-btn" title="Copy to clipboard" aria-label="Copy code"><span class="md-copy-icon">⧉</span><span class="md-copy-feedback">Copied!</span></button>
+<pre><code class="language-julia"># Dataset size-based recommendations
+function recommend_algorithm(data_size::Int)
+    if data_size &lt; 10_000
+        &quot;Any algorithm - all perform well&quot;
+    else
+        &quot;Fisher-Jenks, Quantile and Equal breaks all fast; K-means slower&quot;
+    end
+end</code></pre>
+</div>
+<h3 id="**Quality-vs-Performance-Trade-off**" class="md-heading">🔬 <strong>Quality vs Performance Trade-off</strong><a href="#**Quality-vs-Performance-Trade-off**" class="md-heading-anchor" aria-label="Link to this section">#</a></h3>
+<ul class="md-list-tight">
+<li><p><strong>Highest Quality</strong>: Fisher-Jenks (optimal breaks for clustered data)</p>
+</li>
+<li><p><strong>Balanced</strong>: K-means (good clustering, reasonable speed)</p>
+</li>
+<li><p><strong>High Performance</strong>: Quantile (excellent speed, equal representation)</p>
+</li>
+<li><p><strong>Maximum Speed</strong>: Equal intervals (fastest, but may not fit data well)</p>
+</li>
+</ul>
+<h2 id="Handling-Boundary-Values" class="md-heading">Handling Boundary Values<a href="#Handling-Boundary-Values" class="md-heading-anchor" aria-label="Link to this section">#</a></h2>
+<p>Breakers.jl handles boundary values (values exactly at a break point) according to R&#39;s classInt conventions:</p>
+<ol class="md-list-tight">
+<li><p>Values at the minimum break are assigned to the first bin</p>
+</li>
+<li><p>Values exactly on interior breaks are assigned to the higher bin</p>
+</li>
+<li><p>Values at the maximum break are assigned to the highest bin</p>
+</li>
+</ol>
+<p>This behavior ensures consistency with R&#39;s classInt results.</p>
+      </article>
+      <footer class="md-footer">
+<p>Built with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and <a href="https://github.com/mthelm85/MaterialDocs.jl">MaterialDocs.jl</a>.</p>
+      </footer>
+    </main>
+    <aside class="md-toc">
+      <div class="md-toc-inner">
+        <p class="md-toc-title">On this page</p>
+          <a class="md-toc-link md-toc-h2" href="#Fisher-Jenks-Natural-Breaks">Fisher-Jenks Natural Breaks</a>
+            <a class="md-toc-link md-toc-h3" href="#Performance">Performance</a>
+          <a class="md-toc-link md-toc-h2" href="#K-means-Clustering">K-means Clustering</a>
+            <a class="md-toc-link md-toc-h3" href="#Performance-Optimization">Performance Optimization</a>
+          <a class="md-toc-link md-toc-h2" href="#Quantile-Breaks">Quantile Breaks</a>
+            <a class="md-toc-link md-toc-h3" href="#Excellent-Performance">🚀 Excellent Performance</a>
+          <a class="md-toc-link md-toc-h2" href="#Equal-Interval-Breaks">Equal Interval Breaks</a>
+            <a class="md-toc-link md-toc-h3" href="#Fastest-Performance">⚡ Fastest Performance</a>
+          <a class="md-toc-link md-toc-h2" href="#Algorithm-Selection-Guide">Algorithm Selection Guide</a>
+            <a class="md-toc-link md-toc-h3" href="#**Decision-Matrix**">📊 Decision Matrix</a>
+            <a class="md-toc-link md-toc-h3" href="#**Performance-Ranking**-(1K-data-points)">🎯 Performance Ranking (1K data points)</a>
+            <a class="md-toc-link md-toc-h3" href="#**Scaling-Recommendations**">📈 Scaling Recommendations</a>
+            <a class="md-toc-link md-toc-h3" href="#**Quality-vs-Performance-Trade-off**">🔬 Quality vs Performance Trade-off</a>
+          <a class="md-toc-link md-toc-h2" href="#Handling-Boundary-Values">Handling Boundary Values</a>
+      </div>
+    </aside>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/julia.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/julia-repl.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="../../siteinfo.js"></script>
+  <script src="../../../versions.js"></script>
+  <script src="../../assets/materialdocs.js?v=ced5c122"></script>
+</body>
+</html>
