@@ -1,6 +1,6 @@
 name = "Breakers"
 uuid = "e52b5ea0-8122-4946-b8e9-9981f9d15727"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Richard Careaga <public@careaga.net>"]
 
 [deps]
