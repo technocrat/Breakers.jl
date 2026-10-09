@@ -268,8 +268,8 @@ Results are automatically saved as timestamped CSV files for reproducibility.
 
 ### 🔗 **Full Documentation**
 - **[Online documentation](https://technocrat.github.io/Breakers.jl/)** - Manual and API reference
-- **[Algorithm Guide](https://technocrat.github.io/Breakers.jl/dev/manual/binning_methods/)** - Detailed explanation of each method
-- **[R classInt Compatibility](https://technocrat.github.io/Breakers.jl/dev/manual/r_classint_compatibility/)** - What matches R exactly, and what differs
+- **[Algorithm Guide](https://technocrat.github.io/Breakers.jl/stable/manual/binning_methods/)** - Detailed explanation of each method
+- **[R classInt Compatibility](https://technocrat.github.io/Breakers.jl/stable/manual/r_classint_compatibility/)** - What matches R exactly, and what differs
 - **[Performance Roadmap](docs/PERFORMANCE_ROADMAP.md)** - Historical record of earlier optimization plans
 - **[Benchmark Analysis](benchmarks/README.md)** - Comprehensive performance analysis
 
